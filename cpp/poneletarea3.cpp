@@ -25,6 +25,6 @@ int main()
   if( (k == "s") || (k == "f") || (k == "l") && (lock == false) )
   {
     cout << "Metodo anterior: " << method << "\n";
-    cout << "Metodo nuevo: 
-  
+    cout << "Metodo nuevo: " << k[0] << "\n";
+    method = k[0];  
 }
