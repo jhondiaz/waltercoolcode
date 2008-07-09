@@ -67,10 +67,11 @@ bool compruebaComando(string p)
 bool chequea(string p)
 {
   int x,y;
+  cout << "Chequeando... \"" << p << "\"\n";
   //Falta implementar
   for(x = 0; x < M; x++)
   {
-    for(y = 0; x < S; y++)
+    for(y = 0; y < S; y++)
     {
       if (memoriaFisica[x][y] == p)
       {
@@ -78,6 +79,7 @@ bool chequea(string p)
       }
     }
   }
+  cout << "Chequeado\n";
   return 0;
 }
 
@@ -85,9 +87,10 @@ void introduccion()
 {
   cout << "Bienvenido a GNU/poneletarea3, podrás simular paginación desde aquí\n";
   cout << "Tus comandos son los siguientes:\n";
-  cout << "l)Cambia el reemplazo a FIFO\nl) Cambia el reemplazo a LRU\n";
+  cout << "f)Cambia el reemplazo a FIFO\nl) Cambia el reemplazo a LRU\n";
   cout << "s)Cambia el reemplazo a Segunda Oportunidad\nq) Sale del programa\n\n";
-  cout << "
+  cout << "Debes ingresar \"Px:a×b\" donde x es el identificador del proceso\n";
+  cout << "axb es la posición hexadecimal\n";
 }
 
 int main()
