@@ -1,0 +1,51 @@
+#include <QApplication>
+#include <QLabel>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QLineEdit>
+#include <QCheckBox>
+#include <QRadioButton>
+#include <QSlider>
+#include <QSpinBox>
+
+int main(int argc, char *argv[])
+{
+  QApplication app(argc, argv);
+  //Creo objects
+  QWidget *window = new QWidget;
+  QLabel *label = new QLabel("<h3><font color=red>Soy un label</color></h3><u>underline</u><b>bold</b><i>cursivo</i>");
+  QPushButton *button = new QPushButton("Soy un boton");
+  QLineEdit *textbox = new QLineEdit();
+  QCheckBox *cajita = new QCheckBox();
+  QRadioButton *botoncito = new QRadioButton();
+  QSpinBox *spinbox = new QSpinBox;
+  QSlider *slider = new QSlider;
+  QHBoxLayout *principal = new QHBoxLayout;
+  QVBoxLayout *layout = new QVBoxLayout;
+  QHBoxLayout *l_botones = new QHBoxLayout;
+  QHBoxLayout *l_barra = new QHBoxLayout;
+  //Seteo parámetros a objetos
+  window->setWindowTitle("Soy un título");
+  spinbox->setRange(0,130);
+  slider->setRange(0,130);
+  //Conecto acciones
+  QObject::connect(button, SIGNAL(clicked()), &app, SLOT(quit()));
+  QObject::connect(spinbox, SIGNAL(valueChanged(int)), slider, SLOT(setValue(int)));
+  QObject::connect(slider, SIGNAL(valueChanged(int)), spinbox, SLOT(setValue(int)));
+  //Agrego objetos al panel
+  principal->addLayout(l_barra);
+  principal->addLayout(layout);
+  l_barra->addWidget(slider);
+  layout->addWidget(label);
+  layout->addWidget(button);
+  layout->addWidget(textbox);
+  layout->addLayout(l_botones);
+  layout->addWidget(spinbox);
+  l_botones->addWidget(cajita);
+  l_botones->addWidget(botoncito);
+  //Inicio
+  window->setLayout(principal);
+  window->show();
+  return app.exec();
+}
