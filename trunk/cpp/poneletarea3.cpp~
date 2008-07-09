@@ -26,9 +26,15 @@ bool SecondOportunity(string p)
 
 bool add(string p)
 {
+  int x,y;
   string asd = p.substr(p.find("x")+1,p.length());
-  cout << asd << "\n";
-  //Falta implementar
+  /**
+  tempore = "P" // + numero ID + : + hex0 + x + hex1;
+  for(x = 0; x < S; y++)
+  {
+    memoriaFisica[record[0]][x] = tempore;
+  }
+  */
   return 0;
 }
 
