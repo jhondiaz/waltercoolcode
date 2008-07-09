@@ -2,7 +2,7 @@
 using namespace std;
 
 string **memoriaFisica;
-int M, S, N;
+int M, S, N,record[2];
 bool lock = false;
 char method = 'f';
 
@@ -26,7 +26,15 @@ bool SecondOportunity(string p)
 
 bool add(string p)
 {
-  //Falta implementar
+  int x,y;
+  string asd = p.substr(p.find("x")+1,p.length());
+  /**
+  tempore = "P" // + numero ID + : + hex0 + x + hex1;
+  for(x = 0; x < S; y++)
+  {
+    memoriaFisica[record[0]][x] = tempore;
+  }
+  */
   return 0;
 }
 
@@ -75,6 +83,8 @@ bool chequea(string p)
     {
       if (memoriaFisica[x][y] == p)
       {
+	record[0] = x;
+	record[1] = y;
 	return 1;
       }
     }
