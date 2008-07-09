@@ -1,0 +1,24 @@
+ Mi solución no puede ser dada, ya que recibo como respuesta de compilación:
+ 
+/tmp/ccpLO9Pl.o: In function `taskManager()':
+shearsort.cpp:(.text+0x39e): undefined reference to `pthread_create'
+shearsort.cpp:(.text+0x3d6): undefined reference to `pthread_join'
+shearsort.cpp:(.text+0x418): undefined reference to `pthread_create'
+shearsort.cpp:(.text+0x450): undefined reference to `pthread_join'
+collect2: ld returned 1 exit status
+
+Aunque, en teoría, mi algorítmo debería funcionar a la perfección.
+
+Estan impuestos los locks debidamente para que al comenzar cada método de sorting 
+éste pueda esperar a que terminen todos antes de proseguír con el siguiente
+método y evitar posibles choques con el resto y seguirá hasta que no pueda 
+realizar más cambios, diremos que ahí se ha ordenado correctamente nuestro 
+algorítmo.
+
+Luego, pasa a una revisión de del algorítmo, que compara de menor a mayor en
+pares y de mayor a menor en pares, simplificando la vida en ésta revisión.
+
+A mi parecer, el código fué claramente hecho, con suficientes métodos para que
+no hubiesen dramas.
+
+Aún ignoro de que será ese error e intentaré seguir arreglandolo.
