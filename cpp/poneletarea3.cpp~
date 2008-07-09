@@ -1,13 +1,41 @@
 #include <iostream>
+#include <sstream>
 using namespace std;
-
 string **memoriaFisica;
-int M, S, N,record[2];
+int M, S, N, FIFOcounter, record[2], interrupcion;
 bool lock = false;
 char method = 'f';
 
 bool FIFO(string p)
 {
+  int x,y,z = 0;
+  while(true)
+  {
+    if (FIFOcounter == z)
+    {
+      memoriaFisica[x][y] = p;
+      FIFOcounter++;
+      if (FIFOcounter > (M*S)
+      {
+	FIFOcounter = 0;
+      }
+      break;
+    }
+    else
+    {
+      y++;
+      if (y > S)
+      {
+	y=0;
+	x++;
+      }
+      if (x > M)
+      {
+	cout >> "Segmention Fault! Sal del programa inmediatamente!";
+	return 0;
+      }
+    }
+  }
   //Falta implementar
   return 0;
 }
@@ -26,20 +54,34 @@ bool SecondOportunity(string p)
 
 bool add(string p)
 {
+  stringstream qwerty;
   int x,y;
-  string asd = p.substr(p.find("x")+1,p.length());
-  /**
-  tempore = "P" // + numero ID + : + hex0 + x + hex1;
-  for(x = 0; x < S; y++)
+  int d = p.find("x");
+  string hex1 = p.substr(d+1,p.length());
+  qwerty << hex1;
+  qwerty >> y;
+  qwerty.str("");
+  cout << "Soy y: " << y << "\n";
+  string hex0 = p.substr(0, d+1);
+  for(x = 0; x < S; x++) //Existe un bug, añade existentes si uno anterior no se ha añadido
   {
-    memoriaFisica[record[0]][x] = tempore;
+    stringstream ytrewq;
+    string temp;
+    string q = hex0;
+    ytrewq << y+x;
+    ytrewq >> temp;
+    ytrewq.str("");
+    cout << "Soy temp y valgo " << temp <<"\n";
+    q.append(temp);
+    memoriaFisica[record[0]][x] = q;
+    cout << "He añadido " << q << "\n";
   }
-  */
-  return 0;
+  return 1;
 }
 
 bool libera(string p) //Ordeno a los liberadores de memoria
 {
+  cout << "He comenzado a liberar :D\n";
   bool x = 0;
   if(method == 'f')
   {
@@ -89,7 +131,6 @@ bool chequea(string p)
       }
     }
   }
-  cout << "Chequeado\n";
   return 0;
 }
 
