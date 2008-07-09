@@ -27,4 +27,5 @@ int main()
     cout << "Metodo anterior: " << method << "\n";
     cout << "Metodo nuevo: " << k[0] << "\n";
     method = k[0];  
+  }
 }
