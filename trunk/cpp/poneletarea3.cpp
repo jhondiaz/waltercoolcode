@@ -1,12 +1,21 @@
+/**
+Bugs Conocidos:
+
+1) Add() agrega de n a n+m, pero si añado n-1, vuelve a añadir n... n+m
+2) Segmention Fault cuando M o N vale 0
+3) Los procesos son ilimitados...
+4) Detecta P, pero no la heurística de Px:axb
+*/
+
 #include <iostream>
 #include <sstream>
 using namespace std;
 string **memoriaFisica;
-int M, S, N, FIFOcounter, record[2], fault;
+int M, S, N, FIFOcounter, record[2], fault, **chance;
 bool lock = false;
 char method = 'f';
 
-bool FIFO(string p)
+bool FIFO(string p, bool secondOportunity)
 {
   int x,y,z = 0;
   while(true)
@@ -15,10 +24,10 @@ bool FIFO(string p)
     {
       memoriaFisica[x][y] = p;
       FIFOcounter++;
-      if (FIFOcounter > (M*S)
+      if (FIFOcounter > (M*S))
       {
 	FIFOcounter = 0;
-      }
+      } 
       break;
     }
     else
@@ -31,8 +40,7 @@ bool FIFO(string p)
       }
       if (x > M)
       {
-	cout >> "Segmention Fault! Sal del programa inmediatamente!\n";
-	return 0;
+	x = 0;
       }
     }
   }
@@ -41,12 +49,6 @@ bool FIFO(string p)
 }
 
 bool LRU(string p)
-{
-  //Falta implementar
-  return 0;
-}
-
-bool SecondOportunity(string p)
 {
   //Falta implementar
   return 0;
@@ -87,7 +89,7 @@ bool libera(string p) //Ordeno a los liberadores de memoria
   fault++;
   if(method == 'f')
   {
-    x = FIFO(p);
+    x = FIFO(p,0);
   }
   else if(method == 'l')
   {
@@ -95,7 +97,7 @@ bool libera(string p) //Ordeno a los liberadores de memoria
   }
   else if(method == 's')
   {
-    x = SecondOportunity(p);
+    x = FIFO(p,1);
   }
   else
   {
@@ -146,7 +148,7 @@ void introduccion()
   cout << "axb es la posición hexadecimal\n";
 }
 
-ending()
+void ending()
 {
   cout << "Conteo actual!\n\nTotal PageFaults: " << fault << "\n";
   //Por implementar
@@ -162,11 +164,12 @@ int main()
   cin >> S;
   cout << "Ingrese N: ";
   cin >> N;
-  
+  chance = new int*[M];
   memoriaFisica = new string*[M];
   for( x = 0 ; x < M ; x++ )
   {
-   memoriaFisica[x] = new string[S];
+    chance[x] = new int[S];
+    memoriaFisica[x] = new string[S];
   }
   introduccion();
   while(true)
@@ -209,7 +212,7 @@ int main()
       }
       else
       {
-	cout << "Has tipeado algo mal, intenta nuevamente, recuerda, Px=axb\n";
+	cout << "Has tipeado algo mal, intenta nuevamente, recuerda, Px:axb\n";
       }
     }
   }
