@@ -12,6 +12,7 @@ Bugs Conocidos:
 using namespace std;
 string **memoriaFisica;
 int M, S, N, FIFOcounter, record[2], fault, **chance;
+int salvaBugs = 0;
 bool lock = false;
 char method = 'f';
 
@@ -20,7 +21,7 @@ bool FIFO(string p, bool secondOportunity)
   int x,y,z = 0;
   while(true)
   {
-    if (FIFOcounter == z)
+    if ( (FIFOcounter == z) && (chance[x][y] = 0) ) //Lo Encontré!
     {
       memoriaFisica[x][y] = p;
       FIFOcounter++;
@@ -29,6 +30,10 @@ bool FIFO(string p, bool secondOportunity)
 	FIFOcounter = 0;
       } 
       break;
+    }
+    else if( (FIFOcounter == z) && (chance[x][y] = 1) )
+    {
+      chance[x][y] = 0;
     }
     else
     {
@@ -131,6 +136,7 @@ bool chequea(string p)
       {
 	record[0] = x;
 	record[1] = y;
+	
 	return 1;
       }
     }
@@ -192,6 +198,7 @@ int main()
     {
       if(compruebaComando(k) == true) //Es k válido
       {
+	salvaBugs = 0;
 	if(chequea(k) == false) //No existe en memoria
 	{
 	  if(chequea("") == true) //Existe espacio libre en memoria
@@ -207,12 +214,19 @@ int main()
 	else
 	{
 	  cout << "Esta palabra ya se encuentra :)\n";
+	  chance[record[0]][record[1]] = 1;
 	  //No hay interrupción
 	}
       }
       else
       {
 	cout << "Has tipeado algo mal, intenta nuevamente, recuerda, Px:axb\n";
+	salvaBugs++;
+	if(salvaBugs > 10)
+	{
+	  cout << "Lo siento, has tenido muchas fallas, o bug, exit!\n";
+	  break;
+	}
       }
     }
   }
