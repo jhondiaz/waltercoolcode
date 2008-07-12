@@ -11,39 +11,43 @@ Bugs Conocidos:
 #include <sstream>
 using namespace std;
 string **memoriaFisica;
+string *recuerdaProc = new string[1000];
+int *procsUsed = new int[1000];
 int M, S, N, FIFOcounter, record[2], fault, **chance;
 int salvaBugs = 0;
 bool lock = false;
 char method = 'f';
 
-bool FIFO(string p, bool secondOportunity)
+bool ordena(string p) //Method Handler
 {
+  cout << "He comenzado a liberar :D\n";
+  fault++;
   int x,y,z = 0;
   while(true)
   {
     if ( (FIFOcounter == z) && (chance[x][y] = 0) ) //Lo Encontré!
     {
-      memoriaFisica[x][y] = p;
-      FIFOcounter++;
-      if (FIFOcounter > (M*S))
+      memoriaFisica[x][y] = p; //Reemplazalo
+      FIFOcounter++; //Fifo list, para saber a quien le toca.
+      if (FIFOcounter = (M*S))
       {
 	FIFOcounter = 0;
       } 
-      break;
+      return 1;
     }
-    else if( (FIFOcounter == z) && (chance[x][y] = 1) )
+    else if( (FIFOcounter == z) && (chance[x][y] = 1) ) //Second Oportunity regala una oportunidad
     {
       chance[x][y] = 0;
     }
-    else
+    else //Siga buscando
     {
       y++;
-      if (y > S)
+      if (y = S)
       {
 	y=0;
 	x++;
       }
-      if (x > M)
+      if (x = M)
       {
 	x = 0;
       }
@@ -85,31 +89,6 @@ bool add(string p)
   }
   fault++;
   return 1;
-}
-
-bool libera(string p) //Ordeno a los liberadores de memoria
-{
-  cout << "He comenzado a liberar :D\n";
-  bool x = 0;
-  fault++;
-  if(method == 'f')
-  {
-    x = FIFO(p,0);
-  }
-  else if(method == 'l')
-  {
-    x = LRU(p);
-  }
-  else if(method == 's')
-  {
-    x = FIFO(p,1);
-  }
-  else
-  {
-    cout << "Dammm... un bug\n";
-  }
-  //Falta implementar
-  return x;
 }
 
 bool compruebaComando(string p)
@@ -208,13 +187,16 @@ int main()
 	  }
 	  else //No existe espacio, osea, reemplazar
 	  {
-	    libera(k);
+	    ordena(k);
 	  }
 	}
 	else
 	{
 	  cout << "Esta palabra ya se encuentra :)\n";
-	  chance[record[0]][record[1]] = 1;
+	  if(method = 's')
+	  {
+	    chance[record[0]][record[1]] = 1;
+	  }
 	  //No hay interrupción
 	}
       }
