@@ -1,7 +1,6 @@
 /**
 Bugs Conocidos:
 
-1) Add() agrega de n a n+m, pero si añado n-1, vuelve a añadir n... n+m
 2) Segmention Fault cuando M o N vale 0
 3) Los procesos son ilimitados...
 4) Detecta P, pero no la heurística de Px:axb
@@ -14,7 +13,8 @@ string **memoriaFisica;
 string *recuerdaProc = new string[1000];
 int *procsUsed = new int[1000];
 int M, S, N, FIFOcounter, record[2], fault, **chance;
-int salvaBugs,totalProc = 0;
+int salvaBugs = 0;
+int totalProc = 0;
 bool lock = false;
 char method = 'f';
 
@@ -22,7 +22,6 @@ bool chequea(string p)
 {
   int x,y;
   cout << "Chequeando... \"" << p << "\"\n";
-  //Falta implementar
   for(x = 0; x < M; x++)
   {
     for(y = 0; y < S; y++)
@@ -46,10 +45,12 @@ string LRUHandler(int method, string p)
   if(method == 1) //1 = Busca p en recuerdaProc
   {
     cout << "Busco por " << p << " en recuerdaProx[x]\n";
+    cout << "Method: " << method << " string: " << p;
     while(true)
     {
       if (recuerdaProc[x] == p)
       {
+	cout << "procsUsed: " << procsUsed[x] << " x: " << x;
 	procsUsed[x]++;
 	cout << "Ajá, yo te recuerdo! ++\n";
 	return "";
@@ -91,7 +92,7 @@ string LRUHandler(int method, string p)
 bool compruebaComando(string p)
 {
   cout << "Comprobando comando\n";
-  if(p[0] == 'P')
+  if (p[0] == 'P') 
   {
     //Falta mejor implementación
     cout << "He comprobado correctamente\n";
@@ -104,40 +105,47 @@ bool ordena(string p) //Method Handler
 {
   cout << "He comenzado a liberar\n";
   fault++;
-  int x,y,z = 0;
+  int x = 0;
+  int y = 0;
+  int z = 0;
   while(true)
   {
     if (method == 'l')
     {
       cout << "Buscando LRU\n";
       string q = LRUHandler(3,p); //Busco al menos usado
-      cout << "Chequeando en memoria";
+      cout << "Chequeando en memoria\n";
       chequea(q); //Busco la posición en memoria
-      cout << "Cambiando";
+      cout << "Cambiando\n";
       memoriaFisica[record[0]][record[1]] = p; //Lo cambio
-      cout << "Marcando";
+      cout << "Marcando\n";
       LRUHandler(1,p); //Lo marco como usado
       return 1;
-    }/**
+    }
     else if ( (FIFOcounter == z) && (chance[x][y] == 0) ) //Lo Encontré!
     {
-      cout << "Encontré a quien liberar!";
+      cout << "Liberando: " << memoriaFisica[x][y] << "\n";
       memoriaFisica[x][y] = p; //Reemplazalo
       FIFOcounter++; //Fifo list, para saber a quien le toca.
-      if (FIFOcounter = (M*S))
-      {
-	FIFOcounter = 0;
-      } 
       return 1;
     }
     else if( (FIFOcounter == z) && (chance[x][y] == 1) ) //Second Oportunity regala una oportunidad
     {
-      cout << "Regalito de Second Oportunity";
+      cout << "Regalito de Second Oportunity\n";
+      FIFOcounter++;
       chance[x][y] = 0;
     }
     else //Siga buscando
     {
-      cout << "Buscando...";
+      if (FIFOcounter > (M*S))
+      {
+	FIFOcounter = 0;
+      }
+      if( z > (M*S))
+      {
+	z = 0;
+      }
+      cout << z << "Buscando" << x << "..." << y << "\n";
       y++;
       z++;
       if (y == S)
@@ -149,9 +157,8 @@ bool ordena(string p) //Method Handler
       {
 	x = 0;
       }
-    }*/
+    }
   }
-  //Falta implementar
   return 0;
 }
 
@@ -165,7 +172,7 @@ bool add(string p)
   qwerty << hex1;
   qwerty >> y;
   qwerty.str("");
-  cout << "Soy y: " << y << "\n";
+  //cout << "Soy y: " << y << "\n";
   string hex0 = p.substr(0, d+1);
   for(x = 0; x < S; x++) //Existe un bug, añade existentes si uno anterior no se ha añadido. ARREGLADO
   {
@@ -175,7 +182,7 @@ bool add(string p)
     ytrewq << y+z;
     ytrewq >> temp;
     ytrewq.str("");
-    //cout << "Soy temp y valgo " << temp <<"\n";
+    //cout << "Soy temp y valgo " << temp <<"\n"; DEPRECATED
     q.append(temp);
     bool Q = chequea(q);
     if(Q == true) //Existe el termino
@@ -266,8 +273,9 @@ int main()
 	else
 	{
 	  cout << "Esta palabra ya se encuentra :)\n";
-	  if(method = 's')
+	  if(method == 's')
 	  {
+	    cout << "Wow, Second Oportunity te dió un 1!\n";
 	    chance[record[0]][record[1]] = 1;
 	  }
 	  //No hay interrupción
