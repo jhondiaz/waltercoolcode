@@ -11,6 +11,8 @@ Bugs Conocidos:
 #include <sstream>
 using namespace std;
 string **memoriaFisica;
+string *recuerdaProc = new string[1000];
+int *procsUsed = new int[1000];
 int M, S, N, FIFOcounter, record[2], fault, **chance;
 int salvaBugs = 0;
 bool lock = false;
@@ -224,7 +226,7 @@ int main()
 	salvaBugs++;
 	if(salvaBugs > 10)
 	{
-	  cout << "Lo siento, has tenido muchas fallas, exit!\n";
+	  cout << "Lo siento, has tenido muchas fallas, o bug, exit!\n";
 	  break;
 	}
       }
