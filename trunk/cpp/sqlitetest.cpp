@@ -19,7 +19,7 @@ int main()
   //if(rc == 
   //rc = sqlite3_exec(db, "insert into table2 (bla)values('poep')", NULL, 0, &zErrMsg);
   cout << rc;
-  if( rc != SQLITE_OK )
+  if ( rc != SQLITE_OK )
   {
     sqlite3_free(zErrMsg);
     databaseCreation;

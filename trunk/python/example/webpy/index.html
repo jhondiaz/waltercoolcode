@@ -1,0 +1,17 @@
+<html>
+<head>
+<title>blog</title>
+<link rel="stylesheet" type="text/css" href="styles.css" media="screen"/>
+</head>
+<body>
+#for row in $post
+    <h1>$row.title</h1>
+    <p>$row.body</p>
+    <p>
+        <a href="./edit/$row.id">Edit</a>
+        <a href="./view/$row.id">Comment($row.total_comment)</a>
+    </p>
+    <br />
+#end for
+</body>
+</html>
