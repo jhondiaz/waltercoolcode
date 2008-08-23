@@ -1,0 +1,33 @@
+<html>
+<head>
+<title>blog</title>
+<link rel="stylesheet" type="text/css" href="./styles.css" media="screen"/>
+</head>
+<body>
+<h1 class="header"><a href="/">k4ml blog</a></h1>
+#if $post[0]
+    <h1>$post[0].title</h1>
+    <p>$post[0].body</p>
+    <p>
+        <a href="./edit/$post[0].id">Edit</a> |
+        <a href="./view/$post[0].id">Permanent Link</a>
+    </p>
+#end if
+ 
+<p>Comment for this post:</p>
+ 
+#for row in $comment
+    <h1>$row.username</h1>
+    <p>$row.body</p>
+    <br />
+#end for
+<form action="/comment" method="post">
+<label for="post_username">Name</label><br />
+<input id="post_username" type="text" name="post_username" /><br />
+<label for="post_body">Comment</label><br />
+<textarea id="post_body" name="post_body" cols="100" rows="10"></textarea><br />
+<input type="hidden" name="post_id" value="$post[0].id" />
+<input type="submit" name="post_submit" value="Post Comment" />
+</form>
+</body>
+</html>

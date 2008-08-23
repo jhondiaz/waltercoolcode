@@ -1,0 +1,24 @@
+<html>
+<head>
+<title>blog</title>
+<link rel="stylesheet" type="text/css" href="styles.css" media="screen"/>
+</head>
+<body>
+ 
+#if $session
+    <p> You are login as $session.username | <a href="/logout">Logout</a></p>
+    <form action="/add" method="post">
+    <label for="post_title">Title</label><br />
+    <input id="post_title" type="text" name="post_title" /><br />
+    <label for="post_body">Body</label><br />
+    <textarea id="post_body" name="post_body" cols="100" rows="10"></textarea><br />
+    <input type="submit" name="post_submit" value="Post it" />
+    </form>
+#else
+    <form action="/login" method="post">
+    Username : <input type="text" name="username" />
+    Password : <input type="password" name="password" />
+    <input type="submit" name="login" value="Login" />
+#end if
+</body>
+</html>

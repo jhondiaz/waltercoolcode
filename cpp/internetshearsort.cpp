@@ -58,6 +58,8 @@ int main()
 		#pragma omp parallel for
 		for(int j=1;j<n;j+=2)
 			qsort(v[j], n, sizeof(int), compare_d);
+		
+		
 
 		#pragma omp parallel for
 		for(int j=0;j<n;j++)
