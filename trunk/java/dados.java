@@ -1,3 +1,7 @@
+/**
+ * Developed by Pablo Cholaky.
+ * Under GPL-2 License
+*/
 class dados
 {
 	public static void main(String args[])

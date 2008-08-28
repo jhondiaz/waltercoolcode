@@ -1,5 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+#
+# Developed by Pablo Cholaky.
+#   Under GPL-2 License
+#
 import web
 urls = ('/', 'index')
 db = database(dbn='sqlite', db='test.db')

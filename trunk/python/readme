@@ -1,0 +1,24 @@
+Readme version 0.01
+
+HowTo Test it
+*************
+
+- Have Python 2.5
+- Have webpy 0.3
+- Have cheetah 2.0
+
+Files
+*****
+
+- Helloworld.py: Common Helloworld
+- qt4test.py: A messagebox test and form test - Stopped development
+- connection.py: Sqlite3 connection and insert test.
+- sqlweb.py: Sqlite3 connection + webpy use. Based in webpy 0.2, now is bad, need fix it
+- webtest.py: Sqlite3 connection + webpy + cheetah + other tests. Current development.
+- webpytry1.py: Dummy file, not work
+- webtemp.py: Same as webtest.py, new modification will go here.
+- testfile: Dummy file, for I/O testings
+- test.db: The testing database sqlite3 based.
+- templates folder: Cheetah templates. Some dummy html files here.
+- readme: This great file.
+- benchmark.py: A benchmark code. Currend development.
