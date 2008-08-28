@@ -1,4 +1,8 @@
 #!/usr/bin/python
+#
+# Developed by Pablo Cholaky.
+#   Under GPL-2 License
+#
 import sys
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
