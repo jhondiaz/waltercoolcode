@@ -111,6 +111,8 @@ except:
     k = work(None, ask)
     if k == "badlogin":
       print "* Invalid mail or password *"
+    if k == "disabled":
+      print "* This function was disabled for now *"
     print "Write exit for quit of the application"
   print "Thanks for use Kamiltube"
 if gui == 1:
