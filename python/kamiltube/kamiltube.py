@@ -10,7 +10,7 @@
 import sys, getpass
 from kamlib import *
 from os import system
-version = "0.7 beta"
+version = "0.7"
 gui = 1
 mail = None
 passw = None
