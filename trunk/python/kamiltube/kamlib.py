@@ -58,7 +58,6 @@ def niconico(video, valid, mail, passw, cj):
   return link, cj
 
 def redtube(video, valid):
-  print "Not Implemented"
   #Example1: http://www.redtube.com/14924
   #Response1:http://dl.redtube.com/_videos_t4vn23s9jc5498tgj49icfj4678/0000014/C577DH0LD.flv
   #Example2: http://www.redtube.com/3171

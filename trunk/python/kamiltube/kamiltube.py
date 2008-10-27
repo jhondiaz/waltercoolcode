@@ -19,17 +19,16 @@ cookie = None
 def login(self):
   global mail, passw
   try:
-    mail, mailok = QInputDialog.getText(self, "QInputDialog.getText()", "Email:", QLineEdit.Normal)
+    mail, mailok = QInputDialog.getText(self, "Email", "Email:", QLineEdit.Normal)
     if mailok:
-      passw, passok = QInputDialog.getText(self, "QInputDialog.getText()", "Password:", QLineEdit.Password)
+      passw, passok = QInputDialog.getText(self, "Password", "Password:", QLineEdit.Password)
     if not mailok or not passok:
-      return None, None
+      return None
   except:
     mail = raw_input("Email: ")
     passw = getpass.getpass(prompt="Password: ")
   if mail == "" or passw == "":
-    return None, None
-  return mail, passw
+    return None
 
 def work(self,video): #Debug only
   global cookie
@@ -41,8 +40,12 @@ def work(self,video): #Debug only
     flvlink = youtube(video, validyt)
   elif validnico != -1: #If is niconico
     if cookie is None:
-      login(self)
-    flvlink, cookie = niconico(video, validnico, mail, passw, cookie)
+      logrep = login(self)
+      if logrep is not None:
+    	flvlink, cookie = niconico(video, validnico, mail, passw, cookie)
+      else:
+      	flvlink = "badlogin"
+
   else:
     print "Bad video url"
     return "fail"
@@ -91,12 +94,12 @@ try:
       try:
 	k = work(self,str(self.box.text()))
 	if k == "fail":
-		QMessageBox.critical(self, "Error", "Ha habido un error en la url.\nModo de uso: http;//www.youtube.com/watch?v=a3f4faa3", QMessageBox.Ok)
+		QMessageBox.critical(self, "Error", "Unknown url.\nExample url: http;//www.youtube.com/watch?v=a3f4faa3", QMessageBox.Ok)
 	#Sigo necesitando un ícono
 	if k == "disabled":
-	      QMessageBox.information(self, "Informacion", "Funcion aun no implementada\nPor favor, espere a una nueva version.", QMessageBox.Ok)
+	      QMessageBox.information(self, "Information", "Funcion not implemented yet\nPlease, wait for a new versionn.", QMessageBox.Ok)
 	if k == "badlogin":
-	  QMessageBox.warning(self, "Advertencia", "Email o clave erronea o nula\nIntenta nuevamente", QMessageBox.Ok)
+	  QMessageBox.warning(self, "Warning", "Wrong email or password\nTry again", QMessageBox.Ok)
       except urllib2.URLError:
 	QMessageBox.critical(self, "Error", "Not connected to internet", QMessageBox.Ok)
       self.box.setEnabled(1)
