@@ -59,7 +59,7 @@ def work(self,video): #Debug only
   
 try:
   from PyQt4.QtCore import *
-  #from PyQt4.QtGui import *
+  from PyQt4.QtGui import *
   print "Nice, i can use PyQt4 =D"
   class Form(QDialog):
   
