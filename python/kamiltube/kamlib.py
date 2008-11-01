@@ -39,19 +39,25 @@ def niconico(video, valid, mail, passw, cj):
     req = urllib2.Request(url, params)
     urllib2.urlopen(req)
     print "Trying to login"
-  
+  else:
+    req = urllib2.Request("http://www.nicovideo.jp/watch/" + nicode)
+    urllib2.urlopen(req)
+    
   url = "http://www.nicovideo.jp/api/getflv?v=" + nicode
   print "URL=" + url
   req = urllib2.Request(url)
   fvideo = urllib2.urlopen(req).read()
   print "Getting data"
-
+  
   if fvideo == "closed=1&done=true":
     return "badlogin", None
   smile = fvideo[fvideo.find("%2Fsmile")+8:fvideo.find(".nicovideo.jp")]
-  code = fvideo[fvideo.find("%3Fv%3D")+7:fvideo.find("&link=")]
+  code = fvideo[fvideo.find("%3D")+3:fvideo.find("&link=")]
   cj.save("./cookies")
   video = "http://smile" + smile + ".nicovideo.jp/smile?v=" + code
+  print fvideo
+  print smile
+  print video
 
   print "Watching Video..."
   link = "-cookies -cookies-file cookies \"" + video + "\""
