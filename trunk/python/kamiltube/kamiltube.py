@@ -10,7 +10,7 @@
 import sys, getpass
 from kamlib import *
 from os import system
-version = "0.7"
+version = "0.7.2"
 gui = 1
 mail = None
 passw = None
@@ -20,7 +20,7 @@ def login(self):
   global mail, passw
   try:
     mail, mailok = QInputDialog.getText(self, "Email", "Email:", QLineEdit.Normal)
-    if mailok:
+    if mailok and mail != "":
       passw, passok = QInputDialog.getText(self, "Password", "Password:", QLineEdit.Password)
     if not mailok or not passok:
       return None
@@ -29,6 +29,7 @@ def login(self):
     passw = getpass.getpass(prompt="Password: ")
   if mail == "" or passw == "":
     return None
+  return 1
 
 def work(self,video): #Debug only
   global cookie
@@ -57,6 +58,8 @@ def work(self,video): #Debug only
     return "disabled"
   mplayercommand = "/usr/bin/env mplayer " + flvlink
   print mplayercommand
+  #I need open a thread here!
+  #I need open a list[], for n videos in a list!, a really good feature for next release!
   system(mplayercommand)
   return 1
   
@@ -85,8 +88,8 @@ try:
       self.setLayout(grid)
      
       #Acciones
-      self.connect(self.button, SIGNAL("clicked()"), self.response)     
-    
+      self.connect(self.button, SIGNAL("clicked()"), self.response)
+      
     def response(self):
       self.box.selectAll()
       self.box.setEnabled(0)
