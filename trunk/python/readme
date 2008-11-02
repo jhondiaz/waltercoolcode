@@ -14,7 +14,9 @@ Files
 - qt4test.py: A messagebox test and form test - Stopped development
 - connection.py: Sqlite3 connection and insert test.
 - sqlweb.py: Sqlite3 connection + webpy use. Based in webpy 0.2, now is bad, need fix it
+- kamiltube: Youtube and NicoVideo watcher without flash
 - webtest.py: Sqlite3 connection + webpy + cheetah + other tests. Current development.
+- thread.py: Threads and random example
 - webpytry1.py: Dummy file, not work
 - webtemp.py: Same as webtest.py, new modification will go here.
 - testfile: Dummy file, for I/O testings
