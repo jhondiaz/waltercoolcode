@@ -1,21 +1,16 @@
 #!/usr/bin/env python
 
-import threading
+import threading, time, random
 
-class thread(threading.Thread):
-  def __init__(self, event):
-    threading.Thread.__init__(self)
-    self.event = event
-    
-  def run(self):
-    print self.getName(), "waiting"
-    self.event.wait()
-    print self.getName(), "ending"
-    
-event = threading.Event()
-t1 = thread(event)
-t2 = thread(event)
-t1.start()
-t2.start()
+t = list()
+def event(asdf):
+    print "waiting, ", asdf
+    time.sleep(random.random()*100+1)
+    print "ending, ", asdf
 
-event.set()
+for i in range(99):
+	t.append (threading.Thread(target=event, args=(i,)))
+
+for i in range(99):
+	t[i].start()
+
