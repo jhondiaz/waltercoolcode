@@ -1,9 +1,12 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Developed by Pablo Cholaky.
-#   Under GPL-2 License
+# Developed by WalterCool! under GPL-2 License
+# Feel free of modify (using GPL-2 rules) or reporting bugs
+# mailto: waltercool [at] slash [dot] cl
+# http://www.slash.cl
 #
+
 from sqlite3 import *
 
 con = connect("test.db")
