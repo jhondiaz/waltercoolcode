@@ -13,7 +13,7 @@ cj =  None
 mail = None
 passw = None
 
-def youtube(video, valid):
+def youtube(video, valid, qual):
   video = "http://www.yout" + video[valid:]
   resp = urllib2.urlopen(video).read()
   cut1 = resp[resp.find("video_id="):]
@@ -34,14 +34,14 @@ def niconico(video, valid, mail, passw, cj):
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
     urllib2.install_opener(opener)
     url = "https://secure.nicovideo.jp/secure/login?site=niconico"
-    values = {"mail": mail, "password": passw, "next_url": "/" }
+    values = {"mail": mail, "password": passw, "next_url": "/watch/" + nicode }
     params = urllib.urlencode(values)
     req = urllib2.Request(url, params)
     urllib2.urlopen(req)
     print "Trying to login"
-  
-  req = urllib2.Request("http://www.nicovideo.jp/watch/" + nicode)
-  urllib2.urlopen(req)
+  else:
+    req = urllib2.Request("http://www.nicovideo.jp/watch/" + nicode)
+    urllib2.urlopen(req)
     
   url = "http://www.nicovideo.jp/api/getflv?v=" + nicode
   print "URL=" + url
@@ -64,6 +64,7 @@ def niconico(video, valid, mail, passw, cj):
   return link, cj
 
 def redtube(video, valid):
+  print hola
   #Example1: http://www.redtube.com/14924
   #Response1:http://dl.redtube.com/_videos_t4vn23s9jc5498tgj49icfj4678/0000014/C577DH0LD.flv
   #Example2: http://www.redtube.com/3171
