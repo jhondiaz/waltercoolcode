@@ -13,7 +13,7 @@ cj =  None
 mail = None
 passw = None
 
-def youtube(video, valid):
+def youtube(video, valid, qual):
   video = "http://www.yout" + video[valid:]
   resp = urllib2.urlopen(video).read()
   cut1 = resp[resp.find("video_id="):]
@@ -61,9 +61,10 @@ def niconico(video, valid, mail, passw, cj):
 
   print "Watching Video..."
   link = "-cookies -cookies-file cookies \"" + video + "\""
-  return link, cj
+  return link,cj
 
 def redtube(video, valid):
+  print hola
   #Example1: http://www.redtube.com/14924
   #Response1:http://dl.redtube.com/_videos_t4vn23s9jc5498tgj49icfj4678/0000014/C577DH0LD.flv
   #Example2: http://www.redtube.com/3171
