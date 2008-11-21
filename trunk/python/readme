@@ -19,6 +19,8 @@ Files
 - kamiltube/: Youtube and NicoVideo watcher without flash
 - gui/: PyQt4 Examples...
 - eeecontrol/: WebPy Eee Control... is only a utopia...
+- pylab/: A bit examples using pylab.
+- pygame: A empty folder :)
 - webtest.py: Sqlite3 connection + webpy + cheetah + other tests. Current development.
 - thread.py: Threads and random example
 - webtemp.py: Same as webtest.py, new modification will go here.
