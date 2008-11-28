@@ -7,9 +7,8 @@
 # http://www.slash.cl
 #
 
-import sys, getpass
+import sys, getpass, os
 from kamlib import *
-from os import system
 version = "0.7.3alpha"
 gui = 1
 mail = None
@@ -23,11 +22,30 @@ def watchVideo(flvlink):
     return "badlogin"
   if flvlink == "disabled":
     return "disabled"
-  mplayercommand = "/usr/bin/env mplayer " + flvlink
-  print mplayercommand
+  opsys = sys.platform
+  if opsys.find("darwin") is not -1:
+    mplayeroute = "/Applications/mplayer/mplayer" #Dirty, not implemented.
+    vlcroute = "/Applications/VLC.app/Contents/MacOS"
+  elif opsys.find("linux") is not -1:
+    mplayeroute = "/usr/bin/mplayer"
+    vlcroute = "/usr/bin/vlc"
+  else:
+    print "OS not Supported!"
+    return 0
+  if os.path.exists(mplayeroute) is True:
+    watchit = mplayeroute + " " + flvlink
+  elif os.path.exists(vlcroute) is True:
+    watchit = vlcroute + " " + flvlink
+  else:
+    print "I cant find mplayer or vlc installed =("
+    return 0
+  print watchit
   #I need open a thread here!
   #I need open a list[], for n videos in a list!, a really good feature for next release!
-  system(mplayercommand)
+  result = os.system(watchit)
+  if result is not 0:
+    print "Unknown error!!! Report it please!"
+    return 0
   box.setEnabled(1)
   button.setEnabled(1)
   return 1
