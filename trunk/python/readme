@@ -28,5 +28,6 @@ Files
 - test.db: The testing database sqlite3 based.
 - templates folder: Cheetah templates. Some dummy html files here.
 - readme: This great file.
+- rename.py: A application for rename lotoffilesinadir.x.y to lotoffilesinadir.z
 - benchmark.py: A benchmark code. Current development.
 - webimageviewer.py: A image viewer using webpy, is a project, not big deal.

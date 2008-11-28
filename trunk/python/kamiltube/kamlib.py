@@ -16,10 +16,12 @@ passw = None
 def youtube(video, valid, qual):
   video = "http://www.yout" + video[valid:]
   resp = urllib2.urlopen(video).read()
+  #verbose = file("verbose","rw+")
+  #verbose.write(resp)
   cut1 = resp[resp.find("video_id="):]
   video_id = cut1[:cut1.find("&")]
   #print "Video ID= " + video_id
-  cut2 = cut1[cut1.find("&t=")+1:]
+  cut2 = resp[resp.find("&t=")+1:]
   video_t = cut2[:cut2.find("&")]
   #print "Video T= " + video_t
   link = "\"http://www.youtube.com/get_video?" + video_id + "&" + video_t + "\""
