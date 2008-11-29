@@ -14,17 +14,31 @@ gui = 1
 mail = None
 passw = None
 cookie = None
+video = ""
 qual = 1
 
 def watchVideo(flvlink):
+  #ErrorCheck
+  if flvlink == "No internet":
+    print "* You arent on internet."
+    return "No Internet"
   if flvlink == "badlogin":
     cookie = None
+    print "* You got a bad login, try again!"
     return "badlogin"
   if flvlink == "disabled":
+    print "* This kind of video is on development..."
     return "disabled"
+  if flvlink == "Invalid link":
+    print "* This video is no more on the web."
+    return 0
+  if flvlink == "Is a video for 18+":
+    print "* This video is for 18+, i will do a solution for that..."
+    return 0
+  #End ErrorCheck
   opsys = sys.platform
   if opsys.find("darwin") is not -1:
-    mplayeroute = "/Applications/mplayer/mplayer" #Dirty, not implemented.
+    mplayeroute = "/Applications/mplayer/mplayer" #Dirty, not really implemented.
     vlcroute = "/Applications/VLC.app/Contents/MacOS"
   elif opsys.find("linux") is not -1:
     mplayeroute = "/usr/bin/mplayer"
@@ -46,8 +60,10 @@ def watchVideo(flvlink):
   if result is not 0:
     print "Unknown error!!! Report it please!"
     return 0
-  box.setEnabled(1)
-  button.setEnabled(1)
+  if gui is 1:
+    box.setEnabled(1)
+    button.setEnabled(1)
+  print ""  #Nice visual2
   return 1
   
 def response(video, valid, typevideo):
@@ -60,17 +76,11 @@ def response(video, valid, typevideo):
     result = "Nada"
     print "Is not working..."
   watchVideo(result)
-      
-  try:
-    print "hola"
-  except urllib2.URLError:
-    QMessageBox.critical("Error", "Not connected to internet", QMessageBox.Ok)
 
 def youtubequality():
   try:
     print "Here you can see youtube quality"
   except:
-    raise
     print "Press 1 for high quality"
     print "Press 2 for low quality"
     return raw_input("Option: ")
@@ -78,8 +88,8 @@ def youtubequality():
   
 def login():
   try:
+    global mail,passw
     #Objects
-    global mail
     login = QDialog()
     login_mailtext = QLabel("Email:")
     login_mail = QLineEdit(mail)
@@ -100,12 +110,10 @@ def login():
     login.setLayout(login_grid)
     
     def accept():
-      global mail,passw
       mail = login_mail.text()
       passw = login_passw.text()
       login.close()
       
-    
     #Signals
     login.connect(login_Ok, SIGNAL("clicked()"), accept)
     login.connect(login_cancel, SIGNAL("clicked()"), SLOT("close()") )
@@ -116,12 +124,14 @@ def login():
     login.exec_()
     
   except:
-    raise
     mail = raw_input("Email: ")
     passw = getpass.getpass(prompt="Password: ")
     
 def work(): #Debug only
-  video = str(box.text())
+  global video
+  if gui is 1:
+    video = str(box.text())
+    
   global cookie, mail, passw
   flvlink = ""
   validyt = video.find("ube.com/watch?v=")
@@ -134,10 +144,7 @@ def work(): #Debug only
   elif validnico != -1: #If is niconico
     if cookie is None:
       login()
-      print mail
-      print passw
     if (mail is not None) and (passw is not None):
-      #flvlink, cookie = niconico(video, validnico, mail, passw, cookie)
       response(video, validnico, "nico")
     else:
       	flvlink = "badlogin"
@@ -155,11 +162,8 @@ try: #GUI
   app = QApplication(sys.argv)
   print "Nice, i can use PyQt4 =D"
   
-  
-  def boton(event):
-    print "hola"
-  #Objets
   mainapp = QWidget()
+  #Objets
   label = QLabel("Video Address:")
   box = QLineEdit("http://www.youtube.com/watch?v=iW87vxM11tw")
   button = QPushButton("&Watch it!")
@@ -179,16 +183,18 @@ try: #GUI
   
   sys.exit(app.exec_())
 except: #Console only.
-  raise
   print "Kamiltube Version " + version
-  while 1:
-    ask = raw_input("Video Address: ")
-    if ask == "exit":
+  print ""
+  print "Write exit for quit of the application"
+  print ""
+  gui = 0
+  while True:
+    video = raw_input("Video Address: ")
+    print "" #Is nicer...
+    if video == "exit":
       break
-    k = work(ask)
-    if k == "badlogin":
-      print "* Invalid mail or password *"
-    if k == "disabled":
-      print "* This function was disabled for now *"
-    print "Write exit for quit of the application"
-  print "Thanks for use Kamiltube"
+    elif video == "help":
+      print "Press \"exit\" for exit of Kamiltube"
+    else:
+      k = work()
+print "Thanks for use Kamiltube"

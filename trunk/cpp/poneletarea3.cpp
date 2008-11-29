@@ -26,7 +26,7 @@ char method = 'f';
 bool chequea(string p)
 {
   int x,y;
-  //cout << "Chequeando... \"" << p << "\"\n";
+  cout << "Chequeando... \"" << p << "\"\n";
   for(x = 0; x < M; x++)
   {
     for(y = 0; y < S; y++)
@@ -39,18 +39,18 @@ bool chequea(string p)
       }
     }
   }
-  //cout << "No encontrado :D\n";
+  cout << "No encontrado :D\n";
   return 0;
 }
 
 string LRUHandler(int method, string p)
 {
-  //cout << "Soy LRUHandler\n";
+  cout << "Soy LRUHandler\n";
   int x = 0;
   if(method == 1) //1 = Busca p en recuerdaProc
   {
-    //cout << "Busco por " << p << " en recuerdaProx[x]\n";
-    //cout << "Method: " << method << " string: " << p;
+    cout << "Busco por " << p << " en recuerdaProx[x]\n";
+    cout << "Method: " << method << " string: " << p;
     while(true)
     {
       if (recuerdaProc[x] == p)
@@ -70,14 +70,14 @@ string LRUHandler(int method, string p)
   }
   if(method = 2) //Añade p en recuerdaProc
   {
-    //cout << "Nuevo proceso en recuerdaProc, agregado\n";
+    cout << "Nuevo proceso en recuerdaProc, agregado\n";
     recuerdaProc[totalProc] = p;
     totalProc++;
     return "";
   }
   if(method = 3) //Ordena
   {
-    //cout << "LRU, ordenando\n";
+    cout << "LRU, ordenando\n";
     int menor = -1;
     for(x = 0; x < totalProc; x++)
     {
@@ -96,7 +96,7 @@ string LRUHandler(int method, string p)
 
 bool compruebaComando(string p)
 {
-  //cout << "Comprobando comando\n";
+  cout << "Comprobando comando\n";
   int x = p.find("x");
   int y = p.find(":");
   int z;
@@ -106,7 +106,7 @@ bool compruebaComando(string p)
   qwe >> z;
   if ( (p[0] == 'P') && (x > y) && (z < N) )
   {
-    //cout << "He comprobado correctamente\n";
+    cout << "He comprobado correctamente\n";
     return 1;
   }
   return 0;
@@ -114,7 +114,7 @@ bool compruebaComando(string p)
 
 bool ordena(string p) //Method Handler
 {
-  //cout << "He comenzado a liberar\n";
+  cout << "He comenzado a liberar\n";
   int cfo;
   stringstream lero;
   lero << p.substr(1,p.length()-p.find(":"));
@@ -128,26 +128,26 @@ bool ordena(string p) //Method Handler
   {
     if (method == 'l')
     {
-      //cout << "Buscando LRU\n";
+      cout << "Buscando LRU\n";
       string q = LRUHandler(3,p); //Busco al menos usado
-      //cout << "Chequeando en memoria\n";
+      cout << "Chequeando en memoria\n";
       chequea(q); //Busco la posición en memoria
-      //cout << "Cambiando\n";
+      cout << "Cambiando\n";
       memoriaFisica[record[0]][record[1]] = p; //Lo cambio
-      //cout << "Marcando\n";
+      cout << "Marcando\n";
       LRUHandler(1,p); //Lo marco como usado
       return 1;
     }
     else if ( (FIFOcounter == z) && (chance[x][y] == 0) ) //Lo Encontré!
     {
-      //cout << "Liberando: " << memoriaFisica[x][y] << "\n";
+      cout << "Liberando: " << memoriaFisica[x][y] << "\n";
       memoriaFisica[x][y] = p; //Reemplazalo
       FIFOcounter++; //Fifo list, para saber a quien le toca.
       return 1;
     }
     else if( (FIFOcounter == z) && (chance[x][y] == 1) ) //Second Oportunity regala una oportunidad
     {
-      //cout << "Regalito de Second Oportunity\n";
+      cout << "Regalito de Second Oportunity\n";
       FIFOcounter++;
       chance[x][y] = 0;
     }
@@ -209,7 +209,7 @@ bool add(string p)
     if(Q == false) //No existe en memoria
     {
       memoriaFisica[remember][x] = q;
-      //cout << "He añadido " << q << "\n";
+      cout << "He añadido " << q << "\n";
       z++;
     }
     if(method == 'l') LRUHandler(1,q);
@@ -295,7 +295,7 @@ int main()
 	{
 	  if(chequea("") == true) //Existe espacio libre en memoria
 	  {
-	    //cout << "Existe espacio libre en memoria, congrats\n";
+	    cout << "Existe espacio libre en memoria, congrats\n";
 	    add(k);
 	  }
 	  else //No existe espacio, osea, reemplazar
@@ -305,10 +305,10 @@ int main()
 	}
 	else
 	{
-	  //cout << "Esta palabra ya se encuentra :)\n";
+	  cout << "Esta palabra ya se encuentra :)\n";
 	  if(method == 's')
 	  {
-	    //cout << "Wow, Second Oportunity te dió un 1!\n";
+	    cout << "Wow, Second Oportunity te dió un 1!\n";
 	    chance[record[0]][record[1]] = 1;
 	  }
 	  //No hay interrupción
