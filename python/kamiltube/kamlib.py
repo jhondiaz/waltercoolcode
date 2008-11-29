@@ -15,7 +15,15 @@ passw = None
 
 def youtube(video, valid, qual):
   video = "http://www.yout" + video[valid:]
-  resp = urllib2.urlopen(video).read()
+  try:
+    resp = urllib2.urlopen(video).read()
+  except:
+    return "No internet"
+  #Protection
+  if resp.find("This video is no longer available due to a copyright") is not -1:
+    return "Invalid link"
+  if resp.find("This video or group may contain content that is inappropriate") is not -1:
+    return "Is a video for 18+"
   #verbose = file("verbose","rw+")
   #verbose.write(resp)
   cut1 = resp[resp.find("video_id="):]
@@ -38,7 +46,10 @@ def niconico(video, valid, mail, passw, cj):
     url = "https://secure.nicovideo.jp/secure/login?site=niconico"
     values = {"mail": mail, "password": passw, "next_url": "/watch/" + nicode }
     params = urllib.urlencode(values)
-    req = urllib2.Request(url, params)
+    try:
+      req = urllib2.Request(url, params)
+    except:
+      return "No internet"
     urllib2.urlopen(req)
     print "Trying to login"
   else:
