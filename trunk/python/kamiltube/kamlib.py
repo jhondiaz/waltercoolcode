@@ -7,51 +7,57 @@
 # http://www.slash.cl
 #
 
-import urllib, urllib2
+import urllib, urllib2, os
 from cookielib import MozillaCookieJar
 cj =  None
 mail = None
 passw = None
 
-def youtube(video, valid, qual):
+def youtube(video, valid):
   video = "http://www.yout" + video[valid:]
-  try:
-    resp = urllib2.urlopen(video).read()
-  except:
-    return "No internet"
+  resp = urllib2.urlopen(video).read()
   #Protection
   if resp.find("This video is no longer available due to a copyright") is not -1:
-    return "Invalid link"
-  if resp.find("This video or group may contain content that is inappropriate") is not -1:
-    return "Is a video for 18+"
+    return "This video is not available due copyright"
+  elif resp.find("The URL contained a malformed video ID.") is not -1:
+    return "Bad video url"
+  elif resp.find("This video or group may contain content that is inappropriate") is not -1:
+    return "Is a video for 18+, you must be logged in, but you cant now."
+  elif resp.find("This is a private video.") is not -1:
+    return "Private Video"
+  #End Protection
   #verbose = file("verbose","rw+")
   #verbose.write(resp)
   cut1 = resp[resp.find("video_id="):]
   video_id = cut1[:cut1.find("&")]
-  #print "Video ID= " + video_id
+  
   cut2 = resp[resp.find("&t=")+1:]
   video_t = cut2[:cut2.find("&")]
-  #print "Video T= " + video_t
-  link = "\"http://www.youtube.com/get_video?" + video_id + "&" + video_t + "\""
-  print "link: " + link
+  
+  if video.find("&fmt=") is not -1:
+    qual = "&fmt=" + video[video.find("fmt=")+4:video.find("fmt=")+6]
+  else:
+    qual = ""
+  link = "http://www.youtube.com/get_video?" + video_id + "&" + video_t + qual
+  try:
+    urllib2.urlopen(link)
+  except urllib2.HTTPError:
+    return "You cant watch this video using this quality, change it"
   return link
   
 def niconico(video, valid, mail, passw, cj):
   nicode = video[video.find("watch/")+6:]
   video = "http://www.nicovide" + video[valid:]
   if cj is None:
+    print "Trying to login"
     cj = MozillaCookieJar()
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
     urllib2.install_opener(opener)
     url = "https://secure.nicovideo.jp/secure/login?site=niconico"
     values = {"mail": mail, "password": passw, "next_url": "/watch/" + nicode }
     params = urllib.urlencode(values)
-    try:
-      req = urllib2.Request(url, params)
-    except:
-      return "No internet"
+    req = urllib2.Request(url, params)
     urllib2.urlopen(req)
-    print "Trying to login"
   else:
     req = urllib2.Request("http://www.nicovideo.jp/watch/" + nicode)
     urllib2.urlopen(req)
@@ -60,26 +66,32 @@ def niconico(video, valid, mail, passw, cj):
   print "URL=" + url
   req = urllib2.Request(url)
   fvideo = urllib2.urlopen(req).read()
-  print "Getting data"
   
   if fvideo == "closed=1&done=true":
-    return "badlogin", None
+    return "Invalid Username or Password", None
+  print "Logged in"
   smile = fvideo[fvideo.find("%2Fsmile")+8:fvideo.find(".nicovideo.jp")]
   code = fvideo[fvideo.find("%3D")+3:fvideo.find("&link=")]
-  cj.save("./cookies")
+  cj.save(os.environ['HOME'] + "/.kamiltube/cookies")
+    
   video = "http://smile" + smile + ".nicovideo.jp/smile?v=" + code
-  print fvideo
-  print smile
   print video
-
-  print "Watching Video..."
-  link = "-cookies -cookies-file cookies \"" + video + "\""
-  return link,cj
+  return video,cj
 
 def redtube(video, valid):
-  print hola
   #Example1: http://www.redtube.com/14924
   #Response1:http://dl.redtube.com/_videos_t4vn23s9jc5498tgj49icfj4678/0000014/C577DH0LD.flv
   #Example2: http://www.redtube.com/3171
   #Response2: dl.redtube.com/_videos_t4vn23s9jc5498tgj49icfj4678/0000003/I2XDPA18A.flv
   return "disabled"
+  
+def godtube(video, valid):
+  video = "http://www.g" + video[valid:]
+  print video
+  resp = urllib2.urlopen(video).read()
+  link = "http://video.godtube.com/" + resp[resp.find("video=flvideo")+6:resp.find("flv&viewkey")+3]
+  try:
+    urllib2.urlopen("http://video.godtube.com/flvideo2/c7e177079d3786edb467/194613.flv")
+  except urllib2.HTTPError:
+    return "Unknown Error"
+  return link
