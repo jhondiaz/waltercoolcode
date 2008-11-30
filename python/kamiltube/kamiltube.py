@@ -9,31 +9,28 @@
 
 import sys, getpass, os
 from kamlib import *
-version = "0.7.3alpha"
-gui = 1
+version = "0.7.3beta1"
+gui = False
 mail = None
 passw = None
 cookie = None
+usingcookie = False
 video = ""
-qual = 1
+download = False
+
+def messages(message,title):
+  global gui
+  if gui is True:
+    QMessageBox.information(None ,title,message)
+  else:
+    print "* " + message
+  return True
 
 def watchVideo(flvlink):
+  global download, usingcookie
   #ErrorCheck
-  if flvlink == "No internet":
-    print "* You arent on internet."
-    return "No Internet"
-  if flvlink == "badlogin":
-    cookie = None
-    print "* You got a bad login, try again!"
-    return "badlogin"
-  if flvlink == "disabled":
-    print "* This kind of video is on development..."
-    return "disabled"
-  if flvlink == "Invalid link":
-    print "* This video is no more on the web."
-    return 0
-  if flvlink == "Is a video for 18+":
-    print "* This video is for 18+, i will do a solution for that..."
+  if flvlink.find("http://") == -1:
+    messages(flvlink, "Error")
     return 0
   #End ErrorCheck
   opsys = sys.platform
@@ -44,51 +41,66 @@ def watchVideo(flvlink):
     mplayeroute = "/usr/bin/mplayer"
     vlcroute = "/usr/bin/vlc"
   else:
-    print "OS not Supported!"
+    messages("OS not Supported!","Error")
     return 0
+    
+  flvlink = "\"" + flvlink +"\""
   if os.path.exists(mplayeroute) is True:
+    if (usingcookie is True) and (download is False):
+      flvlink = flvlink + " -cookies -cookies-file ~/.kamiltube/cookies"
+    if (usingcookie is True) and (download is True):
+      flvlink = flvlink + " --load-cookies=" + os.environ['HOME'] + "/.kamiltube/cookies"
     watchit = mplayeroute + " " + flvlink
   elif os.path.exists(vlcroute) is True:
     watchit = vlcroute + " " + flvlink
   else:
-    print "I cant find mplayer or vlc installed =("
+    messages("No mplayer or VLC detected", "Error")
     return 0
-  print watchit
   #I need open a thread here!
   #I need open a list[], for n videos in a list!, a really good feature for next release!
-  result = os.system(watchit)
+  if download == True:
+    print flvlink
+    result = os.system("wget -O ~/.kamiltube/video " + flvlink)
+    download = False
+    messages("Download Complete", "Information")
+  else:
+    result = os.system(watchit)
   if result is not 0:
-    print "Unknown error!!! Report it please!"
+    messages("Unknown error with your player", "Error")
     return 0
-  if gui is 1:
+  if gui is True:
     box.setEnabled(1)
     button.setEnabled(1)
   print ""  #Nice visual2
   return 1
   
 def response(video, valid, typevideo):
-  if (typevideo == "youtube"):
-    result = youtube(video, valid, qual)
-  elif (typevideo == "nico"):
-    global cookie
-    result,cookie = niconico(video, valid, mail, passw, cj)
-  else:
-    result = "Nada"
-    print "Is not working..."
-  watchVideo(result)
-
-def youtubequality():
+  import urllib2
   try:
-    print "Here you can see youtube quality"
+    if (typevideo == "youtube"): #Start youtube
+      result = youtube(video, valid)
+    elif (typevideo == "nico"): #Start nicovideo
+      global cookie, download, usingcookie
+      result,cookie = niconico(video, valid, mail, passw, cookie)
+      usingcookie = True
+    elif (typevideo == "godtube"):
+      result = godtube(video, valid)
+    elif (typevideo == "redtube"):
+      result = redtube(video, valid)
+    else:
+      result = "Nothing"
+      print "Is not working..."
+  except urllib2.URLError:
+    messages("You are not connected to internet", "Error")
+    return False
   except:
-    print "Press 1 for high quality"
-    print "Press 2 for low quality"
-    return raw_input("Option: ")
-  return 1
+    messages("Report this error please", "Error")
+    raise
+  watchVideo(result)
   
 def login():
-  try:
-    global mail,passw
+  if gui is True: #A login with GUI
+    global mail
     #Objects
     login = QDialog()
     login_mailtext = QLabel("Email:")
@@ -110,51 +122,67 @@ def login():
     login.setLayout(login_grid)
     
     def accept():
+      global mail,passw
       mail = login_mail.text()
       passw = login_passw.text()
-      login.close()
+      login.done(1)
       
     #Signals
     login.connect(login_Ok, SIGNAL("clicked()"), accept)
     login.connect(login_cancel, SIGNAL("clicked()"), SLOT("close()") )
     
     #Options and execution
+    login_passw.setEchoMode(2)
     login.setWindowTitle("NicoLogin")
     login.show()
     login.exec_()
     
-  except:
+  else: #A login without GUI
     mail = raw_input("Email: ")
     passw = getpass.getpass(prompt="Password: ")
     
-def work(): #Debug only
-  global video
-  if gui is 1:
+def work(): #Im checking if all is right, and preparation for kamlib functions
+  global video, download
+  #Check if .kamiltube exists, if not, create it
+  try:
+    import os.path
+    if os.path.lexists(os.environ['HOME'] + "/.kamiltube") is False:
+      os.mkdir(os.environ['HOME'] + "/.kamiltube")
+  except:
+    messages("Kamiltube need write on your $HOME. Check your permissions", "Error")
+    return False
+  #End of kamiltube exists
+  
+  if gui is True:
     video = str(box.text())
-    
+  if (video[0] == "d"): #If you want download a video
+    download = True
   global cookie, mail, passw
   flvlink = ""
   validyt = video.find("ube.com/watch?v=")
   validnico = video.find("o.jp/watch/")
   validredtube = video.find("edtube.com/")
+  validgodtube = video.find("odtube.com/view_video.php?")
   if validyt != -1: #If is youtube...
-    qual = youtubequality() #Empty
-    response(video, validyt, "youtube" ) #youtube(video, validyt, qual)
+    results = response(video, validyt, "youtube" ) #youtube(video, validyt, qual)
     
   elif validnico != -1: #If is niconico
     if cookie is None:
       login()
     if (mail is not None) and (passw is not None):
-      response(video, validnico, "nico")
-    else:
-      	flvlink = "badlogin"
+      results = response(video, validnico, "nico")
+    else: #If mail and passw are None
+      	messages("Invalid Username or Password", "Error")
 	cookie = None
-
+	return False
+  elif validgodtube != -1: #If is godtube
+    results = response(video, validgodtube, "godtube")
+  elif validredtube != -1: #If is redtube
+    results = response(video, validredtube, "redtube")
   else:
-    print "Bad video url"
-    return "fail"
-  
-  return 1
+    messages("Bad video url", "Error")
+    return False
+  return results
   
 try: #GUI
   from PyQt4.QtCore import *
@@ -164,6 +192,7 @@ try: #GUI
   
   mainapp = QWidget()
   #Objets
+  gui = True
   label = QLabel("Video Address:")
   box = QLineEdit("http://www.youtube.com/watch?v=iW87vxM11tw")
   button = QPushButton("&Watch it!")
@@ -182,12 +211,11 @@ try: #GUI
   mainapp.show()
   
   sys.exit(app.exec_())
-except: #Console only.
+except ImportError: #Console only.
   print "Kamiltube Version " + version
   print ""
   print "Write exit for quit of the application"
   print ""
-  gui = 0
   while True:
     video = raw_input("Video Address: ")
     print "" #Is nicer...
@@ -195,6 +223,7 @@ except: #Console only.
       break
     elif video == "help":
       print "Press \"exit\" for exit of Kamiltube"
+      print "Press \"d <videourl>\" for download the video instead watch it"
     else:
       k = work()
 print "Thanks for use Kamiltube"
