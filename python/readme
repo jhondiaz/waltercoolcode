@@ -20,7 +20,7 @@ Files
 - gui/: PyQt4 Examples...
 - eeecontrol/: WebPy Eee Control... is only a utopia...
 - pylab/: A bit examples using pylab.
-- pygame: A empty folder :)
+- pygame: A empty folder, for now... :)
 - webtest.py: Sqlite3 connection + webpy + cheetah + other tests. Current development.
 - thread.py: Threads and random example
 - webtemp.py: Same as webtest.py, new modification will go here.
@@ -30,4 +30,5 @@ Files
 - readme: This great file.
 - rename.py: A application for rename lotoffilesinadir.x.y to lotoffilesinadir.z
 - benchmark.py: A benchmark code. Current development.
+- megadownload.py: An app for download megaupload links.
 - webimageviewer.py: A image viewer using webpy, is a project, not big deal.

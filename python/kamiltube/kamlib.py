@@ -13,6 +13,12 @@ cj =  None
 mail = None
 passw = None
 
+def urltranslator(url):
+  url = url.replace("%2F","/")
+  url = url.replace("%3F","?")
+  url = url.replace("%3D","=")
+  return url
+
 def youtube(video, valid):
   video = "http://www.yout" + video[valid:]
   resp = urllib2.urlopen(video).read()
@@ -26,8 +32,6 @@ def youtube(video, valid):
   elif resp.find("This is a private video.") is not -1:
     return "Private Video"
   #End Protection
-  #verbose = file("verbose","rw+")
-  #verbose.write(resp)
   cut1 = resp[resp.find("video_id="):]
   video_id = cut1[:cut1.find("&")]
   
@@ -83,7 +87,7 @@ def redtube(video, valid):
   #Response1:http://dl.redtube.com/_videos_t4vn23s9jc5498tgj49icfj4678/0000014/C577DH0LD.flv
   #Example2: http://www.redtube.com/3171
   #Response2: dl.redtube.com/_videos_t4vn23s9jc5498tgj49icfj4678/0000003/I2XDPA18A.flv
-  return "disabled"
+  return "Not implemented"
   
 def godtube(video, valid):
   video = "http://www.g" + video[valid:]
@@ -94,4 +98,23 @@ def godtube(video, valid):
     urllib2.urlopen("http://video.godtube.com/flvideo2/c7e177079d3786edb467/194613.flv")
   except urllib2.HTTPError:
     return "Unknown Error"
+  return link
+  
+def facebook(video, valid):
+  #video = "http://www.facebook.com/" + video[valid:]
+  #resp = urllib.urlopen(video).read()
+  #verbose = file("verbose","rw+")
+  #verbose.write(resp)
+  #link = resp[resp.find("":]
+  #print resp.find("video_src")+13
+  #print resp.find(".mp4\");")+4
+  link = "Not implemented"
+  return link
+  
+def dailymotion(video, valid):
+  video = "http://www.dailymo" + video[valid:]
+  resp = urllib.urlopen(video).read()
+  link = resp[resp.find("get%2F"):resp.find("%40%40")]
+  link = urltranslator(link)
+  link = "http://www.dailymotion.com/" + link
   return link
