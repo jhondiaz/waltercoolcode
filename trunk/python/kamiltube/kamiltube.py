@@ -87,6 +87,10 @@ def response(video, valid, typevideo):
       result = godtube(video, valid)
     elif (typevideo == "redtube"):
       result = redtube(video, valid)
+    elif (typevideo == "dailymotion"):
+      result = dailymotion(video, valid)
+    elif (typevideo == "facebook"):
+      result = facebook(video, valid)
     else:
       result = "Nothing"
       print "Is not working..."
@@ -163,9 +167,11 @@ def work(): #Im checking if all is right, and preparation for kamlib functions
   validnico = video.find("o.jp/watch/")
   validredtube = video.find("edtube.com/")
   validgodtube = video.find("odtube.com/view_video.php?")
+  validailymotion = video.find("tion.com")
+  validyoutube = video.find("video/video.php?")
+  #Start validating...
   if validyt != -1: #If is youtube...
     results = response(video, validyt, "youtube" ) #youtube(video, validyt, qual)
-    
   elif validnico != -1: #If is niconico
     if cookie is None:
       login()
@@ -179,9 +185,14 @@ def work(): #Im checking if all is right, and preparation for kamlib functions
     results = response(video, validgodtube, "godtube")
   elif validredtube != -1: #If is redtube
     results = response(video, validredtube, "redtube")
+  elif validailymotion != -1: #If is dailymotion
+    results = response(video, validailymotion, "dailymotion")
+  elif validyoutube != -1: #If is Youtube
+    results = response(video, validyoutube, "facebook")
   else:
     messages("Bad video url", "Error")
     return False
+  #End Validating
   return results
   
 try: #GUI
@@ -219,9 +230,9 @@ except ImportError: #Console only.
   while True:
     video = raw_input("Video Address: ")
     print "" #Is nicer...
-    if video == "exit":
+    if (video == "exit" or video == "quit" or video == "q"):
       break
-    elif video == "help":
+    elif (video == "help" or video == "h"):
       print "Press \"exit\" for exit of Kamiltube"
       print "Press \"d <videourl>\" for download the video instead watch it"
     else:
