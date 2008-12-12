@@ -6,14 +6,15 @@
 # mailto: waltercool [at] slash [dot] cl
 # http://www.slash.cl
 #
+# Version 0.01
 
-import urllib, urllib2, sys, os, math
+import urllib, urllib2, sys, os, math, getpass
 from cookielib import MozillaCookieJar
 
 autoskip = False
 autoskipAsk = False
 
-def quit():
+def exit(): #Bye!
   print "Thanks for use this program!"
   sys.exit(0)
 
@@ -28,16 +29,16 @@ def hook(blockNumber, blockSize, totalSize): #Is dirty!
     if downloaded > 1024:
       downloaded = downloaded/1024
       size = "Mb"
-  if tsize > 1024:
+  if tsize > 1024: #Bad bad bad, really bad implemented!.
     tsize = tsize/1024
     tsizes = "Kb"
     if tsize > 1024:
       tsize = tsize/1024
       tsizes = "Mb"
-      if tsize > 1024:
+      if tsize > 1024: #Ugly!
 	tsize = tsize/1024
 	tsizes = "Gb"
-  print "\rDownloading %s %s of %s %s" % (downloaded, size, tsize, tsizes) ,
+  print "\rDownloading %.3f %s of %.3f %s   " % (downloaded, size, tsize, tsizes) ,
 
 def loginmegaupload():
   cj = MozillaCookieJar()
@@ -45,27 +46,32 @@ def loginmegaupload():
   urllib2.install_opener(opener)
   url = "http://www.megaupload.com/"
   username = raw_input("Username: ")
-  password = raw_input("Password: ")
+  password = getpass.getpass(prompt="Password: ")
   print "Logging in"
   params = urllib.urlencode({"login":username, "password":password})
   req = urllib2.Request(url, params)
   checklogin = urllib2.urlopen(req).read()
   if checklogin.find("name=\"logout\"") == -1:
     print "Username or password invalid"
-    sys.exit(0)
+    question = raw_input("Try again? Y/n: ").capitalize() #You are failed on a word?
+    if question == "N":
+      quit()
+    else:
+      cj = loginmegaupload()
+      return cj
   print "Logged"
-  return cj
+  return cj #Maybe i can use it on future.
   
 def checkmegaupload(links):
   try:
     url = urllib2.urlopen(links).read()
-  except urllib.URLError:
+  except urllib2.URLError:
     print "Not connected to internet!"
-    sys.exit(0)
+    quit()
     
   notavailable = "Unfortunately, the link you have clicked is not available."
   unavailable = "The file you are trying to access is temporarily unavailable"
-  if url.find(notavailable) != -1:
+  if url.find(notavailable) != -1: 
     return "dead link"
   if url.find(unavailable) != -1:
     return "down link"
@@ -82,8 +88,15 @@ def megaupload(link):
   abs1 = url[url.find("Math.abs(")+9:]
   try:
     absol = abs(int(abs1[:abs1.find("));")]))
-  except ValueError:
+  except ValueError: #That error appears when the link becomes invalid.
     print "This URL have problems, check your links again with this app"
+    print "Link: " + link
+
+    cont = raw_input("You want continue with the next file? Y/n: ").capitalize()
+    if cont == "N": #If you dont want continue.
+      quit()
+    else: #If you want continue with the next file.
+      return False
   
   sqr1 = url[url.find("Math.sqrt(")+10:]
   sqr = int(math.sqrt(int(sqr1[:sqr1.find("));")])))
@@ -94,76 +107,89 @@ def megaupload(link):
   validop2 = valido[valido.find(" + '")+4:]
   valido = validop1 + valor + unichr(sqr) + unichr(absol) + validop2
 
-  #webFile = urllib.urlopen(valido)
   filename = valido.split('/')[-1]
   
   #Start "When exist a file..."
   if autoskip != True and (os.path.exists(filename) is True): # If is not autoskipped.
-      filexist = raw_input("A file with the same name " + filename + " exists, overwrite? y/N: ").capitalize()
-      if filexist != "Y": # You want skip that file
-	if autoskipAsk is False: # I havent asked you for autoskip
-	  autoskipAsk = True
-	  askipall = raw_input("Autoskip All? Y/n: ").capitalize()
-		
-	  if (askipall == "Y") or (askipall == ""): # If you want autoskip all
-	    autoskip = True
+      filexist = raw_input("A file with the same name " + filename + " exists, overwrite? y/N/q: ").capitalize()
+
+      if filexist == "Q":
+        quit() #You want quit.
+      if (filexist != "Y") and (autoskipAsk == False): # Skip that file for first time?
+	autoskipAsk = True
+	askipall = raw_input("Autoskip All? Y/n: ").capitalize()
+	if askipall != "N": # If you want autoskip all.
+	  autoskip = True
+
   if (autoskip == True) and (os.path.exists(filename) is True): # When autoskip is on.
     print "Skipped " + filename + ", url = " + link
     return True
   #End "When exist a file..."
     
-  #localFile = open(filename, 'w')
   print "Downloading " + valido.split('/')[-1] + " as " + link
   
-  try:
-    #localFile.write(webFile.read())
-    #localFile.close()
+  try: #Download it.!
     urllib.urlretrieve(valido,filename, hook)
-    print "\rDownloaded."
-  except:
-    print "  Error."
+    print "\nDownloaded."
+  except: #If something is wrong...
+    print "\nError."
     discon = raw_input("I lose the connection downloading " + link + ", try again? Y/n/q: ").capitalize()
-    if (discon == "") or (discon == "Y"):
+    try: #Try to remove the file.
       os.remove(filename)
+    except: #Well, if i havent start to download, continue.
+      pass
+
+    if (discon == "") or (discon == "Y"): #You want continue?
       megaupload(link)
       return True
-    elif discon == "Q":
-      os.remove(filename)
-      exit()
-    else:
+    elif discon == "Q": #You want exit.
+      quit()
+    else: #You want skip that file...
       print "Skipping"
       os.remove(filename)
+  return True
   
 def megalink(link): #Is a valid link or strange text?
-  start = link.find("http://")
+  fixlink = link.replace(" ","")
+  start = fixlink.find("http://")
   if start == -1:
     return "nolink"
-  return link[start:]
-try:
+  return fixlink[start:]
+
+try: #Open the file.
   f = open("links", "rw")
 except:
   print("You need a \"links\" file with the urls.")
-  sys.exit(0)
+  quit()
+totallines = 0
+validlinks = []
 deadlink = []
 downlink = []
 livelink = []
+for lineas in f:
+  lines = megalink(lineas)
+  if lines != "nolink":
+    validlinks += [lines]
+
 checklinks = raw_input("You want check the links? Y/n/q: ").capitalize()
-if checklinks == "Q":
+if checklinks == "Q": #You want quit.
   exit()
-elif checklinks != "N":
+elif checklinks != "N": #You want check it.
   print "Checking for dead links..."
-  for lineas in f:
-    lines = megalink(lineas)
-    if lines != "nolink":
-      stats = checkmegaupload(lineas)
-      if stats == "live link":
-	livelink += [lineas]
-      elif stats == "down link":
-	downlink += [lineas]
-      else:
-	deadlink += [lineas]
-  
-  print str(len(livelink)) + " links ready for download"
+  x = 0
+  for lineas in validlinks:
+    stats = checkmegaupload(lineas)
+    if stats == "live link":
+      livelink += [lineas]
+    elif stats == "down link":
+      downlink += [lineas]
+    else:
+      deadlink += [lineas]
+    x += 1
+    sys.stdout.write( str(x) + " ")
+    sys.stdout.flush() 
+
+  print "\n" + str(len(livelink)) + " links ready for download"
   print str(len(downlink)) + " links are temporarily down"
   for lineas in downlink:
     print "- Link down: " + lineas
@@ -172,19 +198,19 @@ elif checklinks != "N":
     print "- Link dead: " + lineas
   if len(livelink) == 0:
     print "Sorry, you cant download files on your list."
-    sys.exit(0)
-    if len(downlink) != 0:
+    quit()
+    if len(downlink) != 0: #You cant download a file
       print "Try again when this " + str(len(downlink)) + " become available"
-      sys.exit(0)
-  cont = raw_input("Continue? Y/n: ").capitalize()
+      quit()
+  cont = raw_input("Continue? Y/n: ").capitalize() #Are you happy with resuts?
 else:
-  for lineas in f:
+  for lineas in validlinks:
     lines = megalink(lineas)
     if lines != "nolink":
       livelink += [lineas]
   cont = ""
 
 if cont == "" or cont == "Y":
-  loginmegaupload()
+  loginmegaupload() #Log it.
   for lineas in livelink:
-    megaupload(lineas)
+    megaupload(lineas) #Download the N files.

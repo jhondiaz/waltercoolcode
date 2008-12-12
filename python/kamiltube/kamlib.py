@@ -25,6 +25,8 @@ def youtube(video, valid):
   #Protection
   if resp.find("This video is no longer available due to a copyright") is not -1:
     return "This video is not available due copyright"
+  if resp.find("This video has been removed by the user.") is not -1:
+    return "This video has been removed by the user."
   elif resp.find("The URL contained a malformed video ID.") is not -1:
     return "Bad video url"
   elif resp.find("This video or group may contain content that is inappropriate") is not -1:
