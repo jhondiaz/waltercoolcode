@@ -33,6 +33,8 @@ def youtube(video, valid):
     return "Is a video for 18+, you must be logged in, but you cant now."
   elif resp.find("This is a private video.") is not -1:
     return "Private Video"
+  elif resp.find("This video is not available in your country.") is not -1:
+    return "This video is not available in your country."
   #End Protection
   cut1 = resp[resp.find("video_id="):]
   video_id = cut1[:cut1.find("&")]
