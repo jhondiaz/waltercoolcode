@@ -16,6 +16,7 @@ autoskipAsk = False
 
 def exit(): #Bye!
   print "Thanks for use this program!"
+  print "Visit www.slash.cl for more info"
   sys.exit(0)
 
 def hook(blockNumber, blockSize, totalSize): #Is dirty!

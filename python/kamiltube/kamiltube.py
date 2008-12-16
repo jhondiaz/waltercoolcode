@@ -7,7 +7,7 @@
 # http://www.slash.cl
 #
 
-import sys, getpass, os
+import sys, getpass, os, urllib2
 from kamlib import *
 version = "0.7.3beta1"
 gui = False
@@ -24,6 +24,27 @@ def messages(message,title):
     QMessageBox.information(None ,title,message)
   else:
     print "* " + message
+  return True
+
+def additional(link):
+  val = link.capitalize()
+  if val == "Help" or val == "Info":
+    messages("Use a \"d\" on the start of the video link for download the video, will saved on ~/kamiltube .\nUse in the end of youtube video &fmt=18 for best quality.\nUse update for check updates.","Information")
+  elif val == "Website":
+    messages("The website of this application is www.slash.cl, visit it for check updates or others","Information")
+  elif val == "Update":
+    webversion = (urllib2.urlopen("http://www.slash.cl/kamiltube/version").read()).split("\n")
+    if webversion[1] > version:
+      conclusion = "Exist a update for you, please check www.slash.cl for more info"
+    elif webversion[1] == version:
+      conclusion = "You are using a stable updated version"
+    elif webversion[0] > version:
+      conclusion = "You are using a not updated unstable version, please check www.slash.cl for more info"
+    elif webversion[0] == version:
+      conclusion = "You have the last unstable version."
+    else:
+      conclusion = "You have an edited version, check www.slash.cl, maybe your version is fake"
+    messages("Last version: " + webversion[0] + "\nLast stable version: " + webversion[1] + "\nYour version: " + version + "\n" + conclusion, "Information")
   return True
 
 def watchVideo(flvlink):
@@ -62,7 +83,11 @@ def watchVideo(flvlink):
     print flvlink
     result = os.system("wget -O ~/.kamiltube/video " + flvlink)
     download = False
-    messages("Download Complete", "Information")
+    if result is True:
+      messages("Download Complete", "Information")
+    else:
+      messages("Download Incomplete, Canceled? No internet?", "Information")
+      return False
   else:
     result = os.system(watchit)
   if result is not 0:
@@ -75,7 +100,6 @@ def watchVideo(flvlink):
   return 1
   
 def response(video, valid, typevideo):
-  import urllib2
   try:
     if (typevideo == "youtube"): #Start youtube
       result = youtube(video, valid)
@@ -161,6 +185,9 @@ def work(): #Im checking if all is right, and preparation for kamlib functions
     video = str(box.text())
   if (video[0] == "d"): #If you want download a video
     download = True
+  adcommands = additional(video) #Work with extra info.
+  if adcommands is True:
+    return True
   global cookie, mail, passw
   flvlink = ""
   validyt = video.find("ube.com/watch?v=")
@@ -232,9 +259,6 @@ except ImportError: #Console only.
     print "" #Is nicer...
     if (video == "exit" or video == "quit" or video == "q"):
       break
-    elif (video == "help" or video == "h"):
-      print "Press \"exit\" for exit of Kamiltube"
-      print "Press \"d <videourl>\" for download the video instead watch it"
     else:
       k = work()
 print "Thanks for use Kamiltube"
