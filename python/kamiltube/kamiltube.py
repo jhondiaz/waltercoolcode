@@ -26,7 +26,7 @@ def messages(message,title):
     print "* " + message
   return True
 
-def additional(link):
+def additional(link): #Not video links.
   val = link.capitalize()
   if val == "Help" or val == "Info":
     messages("Use a \"d\" on the start of the video link for download the video, will saved on ~/kamiltube .\nUse in the end of youtube video &fmt=18 for best quality.\nUse update for check updates.","Information")
@@ -45,9 +45,11 @@ def additional(link):
     else:
       conclusion = "You have an edited version, check www.slash.cl, maybe your version is fake"
     messages("Last version: " + webversion[0] + "\nLast stable version: " + webversion[1] + "\nYour version: " + version + "\n" + conclusion, "Information")
+  else:
+    return False
   return True
 
-def watchVideo(flvlink):
+def watchVideo(flvlink): #Display it
   global download, usingcookie
   #ErrorCheck
   if flvlink.find("http://") == -1:
@@ -113,8 +115,8 @@ def response(video, valid, typevideo):
       result = redtube(video, valid)
     elif (typevideo == "dailymotion"):
       result = dailymotion(video, valid)
-    elif (typevideo == "facebook"):
-      result = facebook(video, valid)
+    elif (typevideo == "breakdotcom"):
+      result = breakdotcom(video, valid)
     else:
       result = "Nothing"
       print "Is not working..."
@@ -196,6 +198,7 @@ def work(): #Im checking if all is right, and preparation for kamlib functions
   validgodtube = video.find("odtube.com/view_video.php?")
   validailymotion = video.find("tion.com")
   validyoutube = video.find("video/video.php?")
+  validbreakdotcom = video.find("ak.com/")
   #Start validating...
   if validyt != -1: #If is youtube...
     results = response(video, validyt, "youtube" ) #youtube(video, validyt, qual)
@@ -214,8 +217,8 @@ def work(): #Im checking if all is right, and preparation for kamlib functions
     results = response(video, validredtube, "redtube")
   elif validailymotion != -1: #If is dailymotion
     results = response(video, validailymotion, "dailymotion")
-  elif validyoutube != -1: #If is Youtube
-    results = response(video, validyoutube, "facebook")
+  elif validbreakdotcom != -1: #If is breakdotcom
+    results = response(video, validbreakdotcom, "breakdotcom")
   else:
     messages("Bad video url", "Error")
     return False
