@@ -87,10 +87,7 @@ def niconico(video, valid, mail, passw, cj):
   return video,cj
 
 def redtube(video, valid):
-  #Example1: http://www.redtube.com/14924
-  #Response1:http://dl.redtube.com/_videos_t4vn23s9jc5498tgj49icfj4678/0000014/C577DH0LD.flv
-  #Example2: http://www.redtube.com/3171
-  #Response2: dl.redtube.com/_videos_t4vn23s9jc5498tgj49icfj4678/0000003/I2XDPA18A.flv
+  
   return "Not implemented"
   
 def godtube(video, valid):
@@ -103,17 +100,14 @@ def godtube(video, valid):
   except urllib2.HTTPError:
     return "Unknown Error"
   return link
-  
-def facebook(video, valid):
-  #video = "http://www.facebook.com/" + video[valid:]
-  #resp = urllib.urlopen(video).read()
-  #verbose = file("verbose","rw+")
-  #verbose.write(resp)
-  #link = resp[resp.find("":]
-  #print resp.find("video_src")+13
-  #print resp.find(".mp4\");")+4
-  link = "Not implemented"
-  return link
+
+def breakdotcom(video, valid):
+  video = "http://www.bre" + video[valid:]
+  resp = urllib2.urlopen(video).read()
+  a = resp[resp.find("videoPath', '")+13:resp.find("'+sGlobalContentFilePath+'/'+sGlobalFileName+'.flv'")] #Start
+  b = resp[resp.find("sGlobalContentFilePath=")+24:resp.find("';sGlobalContentUrl=")] #Global Content FilePath
+  c = resp[resp.find("sGlobalFileName=")+17:resp.find("';sGlobalContentID='")] #Global Content FileName
+  return a+b+"/"+c+".flv"
   
 def dailymotion(video, valid):
   video = "http://www.dailymo" + video[valid:]
