@@ -14,6 +14,7 @@ valido = 0
 urls = ('/', 'index', '/main', 'main', '/insert', 'insert')
 db = web.database(dbn='sqlite', db='test.db')
 render = render_cheetah('templates/')
+user = ""
 
 class index:
   def GET(self):
@@ -28,6 +29,8 @@ class index:
 	  globals() ['valido'] = 1
 	  
     if globals() ['valido'] == 1:
+      global user 
+      user = x.user
       return web.seeother('/main')
     else:
       error = 'Usuario o clave invalida'

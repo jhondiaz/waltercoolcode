@@ -51,7 +51,11 @@ def loginmegaupload():
   print "Logging in"
   params = urllib.urlencode({"login":1, "redir":1, "username":username, "password":password})
   req = urllib2.Request(url, params)
-  checklogin = urllib2.urlopen(req).read()
+  try:
+    checklogin = urllib2.urlopen(req).read()
+  except urllib2.URLError: #If you arent on internet.
+    print "Not connected to internet!"
+    exit()
   if checklogin.find("\">Sign out</a>") == -1:
     print "Username or password invalid"
     question = raw_input("Try again? Y/n: ").capitalize() #You are failed on a word?
@@ -68,7 +72,7 @@ def checkmegaupload(links):
     url = urllib2.urlopen(links).read()
   except urllib2.URLError:
     print "Not connected to internet!"
-    quit()
+    exit()
     
   notavailable = "Unfortunately, the link you have clicked is not available."
   unavailable = "The file you are trying to access is temporarily unavailable"
