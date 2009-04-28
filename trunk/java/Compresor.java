@@ -362,7 +362,6 @@ class Compresor
 			for(int x = 0; x<record.length; x++)
 			{
 				record[x] = "";
-				int to;
 				for(int  y = 0; y < Wtf[x].length(); y++)
 				{
 					Character p = Wtf[x].charAt(y);
