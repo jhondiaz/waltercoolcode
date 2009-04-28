@@ -234,6 +234,8 @@ def work(): #Im checking if all is right, and preparation for kamlib functions
   return results
   
 try: #GUI
+  if len(sys.argv) is 2:
+    raise ImportError()
   from PyQt4.QtCore import *
   from PyQt4.QtGui import *
   app = QApplication(sys.argv)
@@ -263,13 +265,17 @@ try: #GUI
 except ImportError: #Console only.
   print "Kamiltube Version " + version
   print ""
-  print "Write exit for quit of the application"
-  print ""
-  while True:
-    video = raw_input("Video Address: ")
-    print "" #Is nicer...
-    if (video == "exit" or video == "quit" or video == "q"):
-      break
-    else:
-      k = work()
+  if len(sys.argv) is 2:
+    video = sys.argv[1]
+    work()
+  else:
+    while True:
+      print "Write exit for quit of the application"
+      print ""
+      video = raw_input("Video Address: ")
+      print "" #Is nicer...
+      if (video == "exit" or video == "quit" or video == "q"):
+        break
+      else:
+        k = work()
 print "Thanks for use Kamiltube"
