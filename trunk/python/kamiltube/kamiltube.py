@@ -8,7 +8,13 @@
 #
 
 import sys, getpass, os, urllib2
-from kamlib import *
+
+try:
+  from kamlib import *
+except ImportError:
+  print("I cant find kamlib.py =/")
+  sys.exit(1)
+
 version = "0.7.3beta1"
 gui = False
 mail = None
@@ -29,7 +35,7 @@ def messages(message,title):
 def additional(link): #Not video links.
   val = link.capitalize()
   if val == "Help" or val == "Info":
-    messages("Use a \"d\" on the start of the video link for download the video, will saved on ~/kamiltube .\nUse in the end of youtube video &fmt=18 for best quality.\nUse update for check updates.","Information")
+    messages("Use a \"d\" on the start of the video link for download the video, will saved on your home as video.\nPut \"update\" for check some updates.\n","Information\n")
   elif val == "Website":
     messages("The website of this application is www.slash.cl, visit it for check updates or others","Information")
   elif val == "Update":
@@ -235,6 +241,8 @@ def work(): #Im checking if all is right, and preparation for kamlib functions
   
 try: #GUI
   if len(sys.argv) > 1:
+    if sys.argv[1] == "-s":
+      sys.argv = []
     raise ImportError()
   from PyQt4.QtCore import *
   from PyQt4.QtGui import *
@@ -262,9 +270,17 @@ try: #GUI
   mainapp.show()
   
   sys.exit(app.exec_())
+
 except ImportError: #Console only.
   print "Kamiltube Version " + version
   print ""
+  if sys.argv.count("--help") > 0 or sys.argv.count("-h") > 0:
+    sys.argv.pop()
+    sys.argv.append("help")
+    print("Shell specific help:\n\n- kamiltube --help, -h or help: This help")
+    print("- kamiltube -s: Force shell mode")
+    print("- kamiltube <video1> <video2> <videoN>: Watch video 1, then video 2... n videos")
+    print("\nGlobal help:\n")
   if len(sys.argv):
     argvs = sys.argv[1:]
     for loops in argvs:

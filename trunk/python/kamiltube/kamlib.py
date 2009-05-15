@@ -19,7 +19,13 @@ def urltranslator(url):
   url = url.replace("%3D","=")
   return url
 
+
+
 def youtube(video, valid):
+
+  """Here you must insert a youtube link with valid = 0, im using valid for checking.
+  Doing that you will get the location of flv video or some error <non link>."""
+
   video = "http://www.yout" + video[valid:]
   resp = urllib2.urlopen(video).read()
   #Protection
@@ -54,6 +60,13 @@ def youtube(video, valid):
   return link
   
 def niconico(video, valid, mail, passw, cj):
+
+  """Here you must insert a nico nico douga link on videowith valid = 0, 
+  im using valid for checking, mail and passw are email and password
+  of your nico nico douga user account, cj is a cookie jar, can be None
+  because if is None, i can create a new CookieJar, else, i will use your
+  CookieJar, doing that you will get the location of flv video."""
+
   nicode = video[video.find("watch/")+6:]
   video = "http://www.nicovide" + video[valid:]
   if cj is None:
@@ -88,9 +101,18 @@ def niconico(video, valid, mail, passw, cj):
 
 def redtube(video, valid):
   
+  """That functon is not implemented, if you can help, i will thank you"""
+
   return "Not implemented"
   
 def godtube(video, valid):
+
+
+  """Here you must insert a godtube link with valid = 0, im using valid for checking.
+  Doing that you will get the location of flv video or some error <non link>.
+  I know a bug with godtube and i dont know fix that, but at least works with some
+  links."""
+
   video = "http://www.g" + video[valid:]
   print video
   resp = urllib2.urlopen(video).read()
@@ -102,6 +124,10 @@ def godtube(video, valid):
   return link
 
 def breakdotcom(video, valid):
+
+  """Here you must insert a break.com link with valid = 0, im using valid for checking.
+  Doing that you will get the location of flv video or some error <non link>."""
+
   if video.find("/my.break") != -1:
     video = "http://my.bre" + video[valid:]
   else:
@@ -113,14 +139,22 @@ def breakdotcom(video, valid):
   return a+b+"/"+c+".flv"
   
 def dailymotion(video, valid):
+
+  """Here you must insert a dailymotion link with valid = 0, im using valid for checking.
+  Doing that you will get the location of flv video or some error <non link>."""
+
   video = "http://www.dailymo" + video[valid:]
   resp = urllib2.urlopen(video).read()
-  link = resp[resp.find("get%2F"):resp.find("%40%40")]
+  resp1 = resp[resp.find("&videoUrl=")+10:]
+  link = resp1[:resp1.find("&embedUrl=")]
   link = urltranslator(link)
-  link = "http://www.dailymotion.com/" + link
+  #link = "http://www.dailymotion.com/" + link
   return link
   
 def youporn(video, valid):
+
+  """Here you must insert a youporn link with valid = 0, im using valid for checking.
+  Doing that you will get the location of flv video or some error <non link>."""
   video = "http://youp" + video[valid:]
   #Adult check
   values = {"id": "enterbutton","type":"submit","name": "user_choice", "value": "enter" }
