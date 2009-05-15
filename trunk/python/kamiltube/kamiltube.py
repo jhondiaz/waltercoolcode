@@ -10,11 +10,12 @@
 import sys, getpass, os, urllib2
 
 try:
-  from kamlib import *
+  import kamlib
 except ImportError:
   print("I cant find kamlib.py =/")
   sys.exit(1)
 
+data = kamlib.methods()
 version = "0.7.3beta1"
 gui = False
 mail = None
@@ -23,6 +24,7 @@ cookie = None
 usingcookie = False
 video = ""
 download = False
+savepath = os.environ['HOME'] + "/.kamiltube/"
 
 def messages(message,title):
   global gui
@@ -49,7 +51,7 @@ def additional(link): #Not video links.
     elif webversion[0] == version:
       conclusion = "You have the last unstable version."
     else:
-      conclusion = "You have an edited version, check www.slash.cl, maybe your version is fake"
+      conclusion = "You have an edited version, check www.slash.cl, maybe your version is fake."
     messages("Last version: " + webversion[0] + "\nLast stable version: " + webversion[1] + "\nYour version: " + version + "\n" + conclusion, "Information")
   else:
     return False
@@ -75,11 +77,14 @@ def watchVideo(flvlink): #Display it
     
   flvlink = "\"" + flvlink +"\""
   if os.path.exists(mplayeroute) is True:
-    if (usingcookie is True) and (download is False):
-      flvlink = flvlink + " -cookies -cookies-file ~/.kamiltube/cookies"
-    if (usingcookie is True) and (download is True):
-      flvlink = flvlink + " --load-cookies=" + os.environ['HOME'] + "/.kamiltube/cookies"
+    if (usingcookie is True):
+      if (download is False):
+	flvlink = flvlink + " -cookies -cookies-file " + savepath + "cookie"
+      else:
+	flvlink = flvlink + " --load-cookies=" + savepath + "cookie"
+      data.saveCookie(savepath + "cookie")
     watchit = mplayeroute + " " + flvlink
+    usingcookie = False
   elif os.path.exists(vlcroute) is True:
     watchit = vlcroute + " " + flvlink
   else:
@@ -88,8 +93,7 @@ def watchVideo(flvlink): #Display it
   #I need open a thread here!
   #I need open a list[], for n videos in a list!, a really good feature for next release!
   if download == True:
-    print flvlink
-    result = os.system("wget -O ~/.kamiltube/video " + flvlink)
+    result = os.system("wget -O " + savepath + "video " + flvlink) #Downloading
     download = False
     if result is True:
       messages("Download Complete", "Information")
@@ -107,24 +111,24 @@ def watchVideo(flvlink): #Display it
   print ""  #Nice visual2
   return 1
   
-def response(video, valid, typevideo): #Uses a dirty method!!
+def response(video, typevideo): #Uses a dirty method!!
   try:
     if (typevideo == "youtube"): #Start youtube
-      result = youtube(video, valid)
+      result = data.youtube(video)
     elif (typevideo == "nico"): #Start nicovideo
-      global cookie, download, usingcookie
-      result,cookie = niconico(video, valid, mail, passw, cookie)
-      usingcookie = True
+      global download, usingcookie
+      result = data.niconico(video, mail, passw)
+      usingcookie = True #That avoids create a new cookie
     elif (typevideo == "godtube"):
-      result = godtube(video, valid)
+      result = data.godtube(video)
     elif (typevideo == "redtube"):
-      result = redtube(video, valid)
+      result = data.redtube(video)
     elif (typevideo == "dailymotion"):
-      result = dailymotion(video, valid)
+      result = data.dailymotion(video)
     elif (typevideo == "breakdotcom"):
-      result = breakdotcom(video, valid)
+      result = data.breakdotcom(video)
     elif (typevideo == "youporn"):
-      result = youporn(video, valid)
+      result = data.youporn(video)
     else:
       result = "Nothing"
       print "Is not working..."
@@ -163,7 +167,7 @@ def login():
     login.setLayout(login_grid)
     
     def accept():
-      global mail,passw
+      global mail, passw
       mail = login_mail.text()
       passw = login_passw.text()
       login.done(1)
@@ -179,6 +183,7 @@ def login():
     login.exec_()
     
   else: #A login without GUI
+    global passw
     mail = raw_input("Email: ")
     passw = getpass.getpass(prompt="Password: ")
     
@@ -213,26 +218,26 @@ def work(): #Im checking if all is right, and preparation for kamlib functions
   validyouporn = video.find("orn.com/watch/")
   #Start validating...
   if validyt != -1: #If is youtube...
-    results = response(video, validyt, "youtube" ) #youtube(video, validyt, qual)
+    results = response(video, "youtube" ) #youtube(video)
   elif validnico != -1: #If is niconico
     if cookie is None:
       login()
     if (mail is not None) and (passw is not None):
-      results = response(video, validnico, "nico")
+      results = response(video, "nico")
     else: #If mail and passw are None
       	messages("Invalid Username or Password", "Error")
 	cookie = None
 	return False
   elif validgodtube != -1: #If is godtube
-    results = response(video, validgodtube, "godtube")
+    results = response(video, "godtube")
   elif validredtube != -1: #If is redtube
-    results = response(video, validredtube, "redtube")
+    results = response(video, "redtube")
   elif validailymotion != -1: #If is dailymotion
-    results = response(video, validailymotion, "dailymotion")
+    results = response(video, "dailymotion")
   elif validbreakdotcom != -1: #If is breakdotcom
-    results = response(video, validbreakdotcom, "breakdotcom")
+    results = response(video, "breakdotcom")
   elif validyouporn != -1: #If is youporn
-    results = response(video, validyouporn, "youporn")
+    results = response(video, "youporn")
   else:
     messages("Bad video url", "Error")
     return False
