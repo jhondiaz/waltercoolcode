@@ -6,13 +6,23 @@
 # mailto: waltercool [at] slash [dot] cl
 # http://www.slash.cl
 #
-# Version 0.01
+# Version 1.0 Stable
 
 import urllib, urllib2, sys, os, math, getpass
 from cookielib import MozillaCookieJar
 
 autoskip = False
 autoskipAsk = False
+if (len(sys.argv) > 1):
+  if (sys.argv.count("help") > 0): #If someone ask for help
+    print("Megadownload.\nYou must create a links named file with your megadownload links, bad typed urls will not downloaded\n")
+    print("Usage: megadownload.py, If finds a links named file, i should download your megaupload files")
+    print("       megadownload.py <route>, If finds a links named file on <route>, i should download your megaupload files on that route")
+    sys.exit(0)
+  else:
+    path = sys.argv[1]
+else:
+  path = os.path.realpath("") + "/"
 
 def exit(): #Bye!
   print "Thanks for use this program!"
@@ -87,11 +97,12 @@ def megaupload(link):
   url = urllib2.urlopen(link).read()
   down1 = url[url.find("id=\"downloadlink\">"):]
   down2 = down1[down1.find("<a href=\"")+9:]
-  valido = down2[:down2.find("\"")]
-  filename = valido.split('/')[-1]
+  valid = down2[:down2.find("\"")]
+  filename = valid.split('/')[-1] #Name, i like for print use only
+  destinypath = path + filename #Path + Filename
   
   #Start "When exist a file..."
-  if autoskip != True and (os.path.exists(filename) is True): # If is not autoskipped.
+  if autoskip != True and (os.path.exists(destinypath) is True): # If is not autoskipped.
       filexist = raw_input("A file with the same name " + filename + " exists, overwrite? y/N/q: ").capitalize()
 
       if filexist == "Q":
@@ -102,34 +113,41 @@ def megaupload(link):
 	if askipall != "N": # If you want autoskip all.
 	  autoskip = True
 
-  if (autoskip == True) and (os.path.exists(filename) is True): # When autoskip is on.
+  if (autoskip == True) and (os.path.exists(destinypath) is True): # When autoskip is on.
     print "Skipped " + filename + ", url = " + link
     return True
   #End "When exist a file..."
     
-  print "Downloading " + valido.split('/')[-1] + " as " + link
+  print "Downloading " + valid.split('/')[-1] + " as " + link
   
   try: #Download it.!
-    urllib.urlretrieve(valido,filename, hook)
+    urllib.urlretrieve(valid,destinypath, hook)
     print "\nDownloaded."
   except IOError: #If IO Error
     print "No space on disk or data write error"
     try:
-      os.remove(filename)
+      os.remove(destinypath)
     except:
       pass
-    IOresp = raw_input("Retry? Y/n/q").capitalize()
-    if (IOresp != "N") or (IOresp != "Q"):
+    IOresp = raw_input("Retry? Y/n/q: ").capitalize()
+    if (IOresp == "Y") or (IOresp != ""):
       megaupload(link)
       return 1
     elif (IOresp == "Q"):
      sys.exit(0)
+  except KeyboardInterrupt:
+    try:
+      os.remove(destinypath)
+    except:
+      pass
+    print "Stopped, i have deleted the file..."
+    sys.exit(1)
   except: #If something is wrong...
     print "\nError."
     raise
     discon = raw_input("I lose the connection downloading " + link + ", try again? Y/n/q: ").capitalize()
     try: #Try to remove the file.
-      os.remove(filename)
+      os.remove(destinypath)
     except: #Well, if i havent start to download, continue.
       pass
 
@@ -140,7 +158,7 @@ def megaupload(link):
       quit()
     else: #You want skip that file...
       print "Skipping"
-      os.remove(filename)
+      os.remove(destinypath)
   return True
   
 def megalink(link): #Is a valid link or strange text?
@@ -151,7 +169,7 @@ def megalink(link): #Is a valid link or strange text?
   return fixlink[start:]
 
 try: #Open the file.
-  f = open("links", "rw")
+  f = open(path + "links", "rw")
 except:
   print("You need a \"links\" file with the urls.")
   quit()
