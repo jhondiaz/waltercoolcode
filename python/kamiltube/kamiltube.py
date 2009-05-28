@@ -16,7 +16,7 @@ except ImportError:
   sys.exit(1)
 
 data = kamlib.methods()
-version = "0.7.3beta1"
+version = "0.7.3beta2"
 gui = False
 mail = None
 passw = None
@@ -192,8 +192,8 @@ def work(): #Im checking if all is right, and preparation for kamlib functions
   #Check if .kamiltube exists, if not, create it
   try:
     import os.path
-    if os.path.lexists(os.environ['HOME'] + "/.kamiltube") is False:
-      os.mkdir(os.environ['HOME'] + "/.kamiltube")
+    if os.path.lexists(savepath) is False:
+      os.mkdir(savepath)
   except:
     messages("Kamiltube need write on your $HOME. Check your permissions", "Error")
     return False
