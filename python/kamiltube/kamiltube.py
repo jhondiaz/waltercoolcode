@@ -299,6 +299,8 @@ except ImportError: #Console only.
       print "" #Is nicer...
       if (video == "exit" or video == "quit" or video == "q"):
         break
+      elif (len(video) == 0):
+        pass
       else:
         k = work()
 print "Thanks for use Kamiltube"

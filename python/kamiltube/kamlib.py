@@ -38,18 +38,22 @@ class methods:
     video = "http://www.youtube.com/watch" + video[video.find("?v="):]
     resp = self.urllib2.urlopen(video).read()
     #Protection
-    if resp.find("This video is no longer available due to a copyright") is not -1:
+    if resp.find("removed due to terms of use violation.") is not -1:
+      return "This video has been removed due to terms of use violation."
+    if resp.find("no longer available due to a copyright") is not -1:
       return "This video is not available due copyright"
-    if resp.find("This video has been removed by the user.") is not -1:
+    if resp.find("has been removed by the user.") is not -1:
       return "This video has been removed by the user."
     elif resp.find("The URL contained a malformed video ID.") is not -1:
       return "Bad video url"
-    elif resp.find("This video or group may contain content that is inappropriate") is not -1:
+    elif resp.find("may contain content that is inappropriate") is not -1:
       return "Is a video for 18+, you must be logged in, but you cant now."
     elif resp.find("This is a private video.") is not -1:
-      return "Private Video"
+      return "Private video."
     elif resp.find("This video is not available in your country.") is not -1:
       return "This video is not available in your country."
+    elif resp.find("The video you have requested is not available.") is not -1:
+      return "Video not available, maybe the user is uploading it."
     #End Protection
     cut1 = resp[resp.find("video_id="):]
     video_id = cut1[:cut1.find("&")]

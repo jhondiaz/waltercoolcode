@@ -125,16 +125,16 @@ def megaupload(link):
     print "\nDownloaded."
   except IOError: #If IO Error
     print "No space on disk or data write error"
+    IOresp = raw_input("Retry? Y/n/q: ").capitalize()
     try:
       os.remove(destinypath)
     except:
       pass
-    IOresp = raw_input("Retry? Y/n/q: ").capitalize()
-    if (IOresp == "Y") or (IOresp != ""):
+    if (IOresp == "Q"):
+     sys.exit(0)
+    elif (IOresp == "Y") or (IOresp == ""):
       megaupload(link)
       return 1
-    elif (IOresp == "Q"):
-     sys.exit(0)
   except KeyboardInterrupt:
     try:
       os.remove(destinypath)
