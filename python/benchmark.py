@@ -15,13 +15,10 @@ a = 0.0
 b = 0
 print "PyWalterCool Benchmark"
 def task():
-	global a,b
-	while(b==0):
-		sin(2*pi*e*a)
-		a += 1
-
-
-
+  global a,b
+  while(b is 0):
+    sin(2*pi*e*a)
+    a += 1.1
 
 t1 = threading.Thread(target=task)
 t2 = threading.Thread(target=task)
