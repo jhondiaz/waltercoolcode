@@ -95,7 +95,7 @@ def watchVideo(flvlink): #Display it
   if download == True:
     result = os.system("wget -O " + savepath + "video " + flvlink) #Downloading
     download = False
-    if result is True:
+    if result == 1:
       messages("Download Complete", "Information")
     else:
       messages("Download Incomplete, Canceled? No internet?", "Information")
@@ -209,6 +209,7 @@ def work(): #Im checking if all is right, and preparation for kamlib functions
   global cookie, mail, passw
   flvlink = ""
   validyt = video.find("ube.com/watch?v=")
+  validyt2 = video.find("ube.com/v/")
   validnico = video.find("o.jp/watch/")
   validredtube = video.find("edtube.com/")
   validgodtube = video.find("odtube.com/view_video.php?")
@@ -217,7 +218,7 @@ def work(): #Im checking if all is right, and preparation for kamlib functions
   validbreakdotcom = video.find("ak.com/")
   validyouporn = video.find("orn.com/watch/")
   #Start validating...
-  if validyt != -1: #If is youtube...
+  if validyt != validyt2: #If is youtube...
     results = response(video, "youtube" ) #youtube(video)
   elif validnico != -1: #If is niconico
     if cookie is None:
@@ -302,5 +303,8 @@ except ImportError: #Console only.
       elif (len(video) == 0):
         pass
       else:
-        k = work()
+        try:
+          work()
+	except:
+	  pass
 print "Thanks for use Kamiltube"
