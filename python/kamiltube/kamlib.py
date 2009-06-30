@@ -35,7 +35,13 @@ class methods:
   def youtube(self, video):
     """Here you must insert a youtube link called video. Should be partially uncomplete the link.
     Doing that you will get the location of flv video or some error <non link>."""
-    video = "http://www.youtube.com/watch" + video[video.find("?v="):]
+    if video.find("?v=") == -1:
+      if video.find("/v/") == -1:
+        return "Not a valid youtube video."
+      else:
+        video = "http://www.youtube.com/watch?v=" + video[video.find("/v/")+3:]
+    else:
+      video = "http://www.youtube.com/watch" + video[video.find("?v="):]
     resp = self.urllib2.urlopen(video).read()
     #Protection
     if resp.find("removed due to terms of use violation.") is not -1:
