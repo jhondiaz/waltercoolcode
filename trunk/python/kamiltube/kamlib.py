@@ -74,7 +74,7 @@ class methods:
     link = "http://www.youtube.com/get_video?" + video_id + "&" + video_t + qual
     try:
       self.urllib2.urlopen(link)
-    except urllib2.HTTPError:
+    except self.urllib2.HTTPError:
       return "You cant watch this video using this quality, change it"
     return link
   

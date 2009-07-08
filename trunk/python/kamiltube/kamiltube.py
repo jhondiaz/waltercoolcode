@@ -90,8 +90,6 @@ def watchVideo(flvlink): #Display it
   else:
     messages("No mplayer or VLC detected", "Error")
     return 0
-  #I need open a thread here!
-  #I need open a list[], for n videos in a list!, a really good feature for next release!
   if download == True:
     result = os.system("wget -O " + savepath + "video " + flvlink) #Downloading
     download = False
@@ -291,7 +289,10 @@ except ImportError: #Console only.
     argvs = sys.argv[1:]
     for loops in argvs:
       video = loops
-      work()
+      try:
+        work()
+      except:
+	pass
   else:
     while True:
       print "Write exit for quit of the application"
