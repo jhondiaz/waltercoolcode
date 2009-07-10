@@ -152,11 +152,11 @@ def youporn(video):
   Not complete"""
   video = "http://youporn.com/" + video[video.find("watch/"):]
   #Adult check
-  values = {"id": "enterbutton","type":"submit","name": "user_choice", "value": "enter" }
+  values = {"user_choice": "Enter"}
   params = urllib.urlencode(values)
   req = urllib2.Request(video, params)
-  resp = urllib2.urlopen(req).read()
+  web = urllib2.urlopen(req).read()
   #End adult check
-  link = resp[resp.find("<h2>Download:</h2>"):resp.find("FLV - Flash Video format</a>")-2]
-  vid = link[link.find("<a href=\"")+9:]
+  resp1 = web[web.find("http://download.youporn.com/download/"):]
+  vid = resp1[:resp1.find("/flv/")]
   return vid
