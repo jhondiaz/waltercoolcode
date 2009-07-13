@@ -127,11 +127,15 @@ def breakdotcom(video):
     video = "http://my.bre" + video[video.find("ak.com/"):]
   else:
     video = "http://www.bre" + video[video.find("ak.com/"):]
-    resp = urllib2.urlopen(video).read()
-    a = resp[resp.find("videoPath', '")+13:resp.find("'+sGlobalContentFilePath+'/'+sGlobalFileName+'.flv'")] #Start
-    b = resp[resp.find("sGlobalContentFilePath=")+24:resp.find("';sGlobalContentUrl=")] #Global Content FilePath
-    c = resp[resp.find("sGlobalFileName=")+17:resp.find("';sGlobalContentID='")] #Global Content FileName
-  return a+b+"/"+c+".flv"
+  resp = urllib2.urlopen(video).read()
+  a = resp[resp.find("videoPath = \"")+13:]
+  a = a[:a.find("\" + s")]
+    #resp.find("'+sGlobalContentFilePath+'/'+sGlobalFileName+'.flv'")] #Start
+  b = resp[resp.find("sGlobalContentFilePath=")+24:resp.find("';sGlobalContentUrl=")] #Global Content FilePath
+  c = resp[resp.find("sGlobalFileName=")+17:]
+  c = c[:c.find("'")] #Global Content FileName
+  d = a + b+ "/" + c + ".flv"
+  return d
     
 def dailymotion(video):
   """Here you must insert a dailymotion link.
@@ -158,5 +162,5 @@ def youporn(video):
   web = urllib2.urlopen(req).read()
   #End adult check
   resp1 = web[web.find("http://download.youporn.com/download/"):]
-  vid = resp1[:resp1.find("/flv/")]
+  vid = resp1[:resp1.find("\">FLV")]
   return vid
