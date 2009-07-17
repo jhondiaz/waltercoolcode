@@ -6,17 +6,19 @@
 # mailto: waltercool [at] slash [dot] cl
 # http://www.slash.cl
 #
+version = "0.7.3"
 
 import sys, getpass, os, urllib2
 
-try:
+try: #Finding kamlib
   import kamlib.weblib
 except ImportError:
-  print("I cant find kamlib.py =/")
+  print("I cant find kamlib.py. Kamiltube needs kamlib installed. Exiting.")
   sys.exit(1)
 
-data = kamlib.weblib
-version = "0.7.3"
+data = kamlib.weblib #Loading a kamlib object
+
+#Variables
 gui = False
 mail = None
 passw = None
@@ -25,6 +27,12 @@ usingcookie = False
 video = ""
 download = False
 savepath = os.environ['HOME'] + "/.kamiltube/"
+#End Variables
+
+#Starting
+
+print "Kamiltube Version: " + version
+print "Kamlib Version: " + kamlib.__version__ + "\n"
 
 def messages(message,title):
   global gui
@@ -52,7 +60,7 @@ def additional(link): #Not video links.
       conclusion = "You have the last unstable version."
     else:
       conclusion = "You have an edited version, check www.slash.cl, maybe your version is fake."
-    messages("Last version: " + webversion[0] + "\nLast stable version: " + webversion[1] + "\nYour version: " + version + "\n" + conclusion, "Information")
+    messages("Update\nLast version: " + webversion[0] + "\nLast stable version: " + webversion[1] + "\nYour version: " + version + "\n" + conclusion, "Information")
   else:
     return False
   return True
@@ -276,8 +284,6 @@ try: #GUI
   sys.exit(app.exec_())
 
 except ImportError: #Console only.
-  print "Kamiltube Version " + version
-  print ""
   if sys.argv.count("--help") > 0 or sys.argv.count("-h") > 0:
     sys.argv.pop()
     sys.argv.append("help")
