@@ -6,40 +6,61 @@
 # mailto: waltercool [at] slash [dot] cl
 # http://www.slash.cl
 #
-version = "0.7.3"
+version = "0.7.4 alpha1"
 
 import sys, getpass, os, urllib2
+sys.argv.pop(0)
 
 try: #Finding kamlib
   import kamlib.weblib
 except ImportError:
-  print("I cant find kamlib.py. Kamiltube needs kamlib installed. Exiting.")
+  print("I cant find kamlib. Kamiltube needs kamlib installed. Exiting.")
   sys.exit(1)
+try:
+  from PyQt4.QtCore import SIGNAL
+  from PyQt4.QtGui import QDialog, QApplication, QWidget, QLabel, QLineEdit, QPushButton, QGridLayout
+  force_nogui = False
+except ImportError:
+  force_nogui = True
+  
 
 data = kamlib.weblib #Loading a kamlib object
 
-#Variables
-gui = False
-mail = None
-passw = None
+#Variables	
+mail = ""
+passw = ""
 cookie = None
 usingcookie = False
-video = ""
 download = False
 savepath = os.environ['HOME'] + "/.kamiltube/"
+debugMode = False
+gui = None
 #End Variables
 
-#Starting
-
-print "Kamiltube Version: " + version
-print "Kamlib Version: " + kamlib.__version__ + "\n"
-
-def messages(message,title):
-  global gui
-  if gui is True:
+def checkparameters(x):
+  global gui, debugMode
+  if x.find("d") > 0:
+    if debugMode == True: #Only for debug
+      print("Using debug mode")
+    debugMode = True
+  if x.find("-help") > 0 or x.find("h") > 0: #Parameters
+    print("Shell specific help:\n\n- kamiltube --help, -h or help: This help")
+    print("- kamiltube -s: Force shell mode")
+    print("- kamiltube <video1> <video2> <videoN>: Watch video 1, then video 2... n videos")
+    print("\nGlobal help:\n")
+    sys.argv = ["help"]
+  if x.find("qt4") > 0:
+    if debugMode == True: #Only for debug
+      print("Using PyQt4 version")
+    global gui
+    gui = "PyQt4"
+    
+def messages(message,title): #Messages
+  global qt4_gui
+  if qt4_gui is True:
     QMessageBox.information(None ,title,message)
   else:
-    print "* " + message
+    print("* " + message)
   return True
 
 def additional(link): #Not video links.
@@ -60,17 +81,16 @@ def additional(link): #Not video links.
       conclusion = "You have the last unstable version."
     else:
       conclusion = "You have an edited version, check www.slash.cl, maybe your version is fake."
-    messages("Update\nLast version: " + webversion[0] + "\nLast stable version: " + webversion[1] + "\nYour version: " + version + "\n" + conclusion, "Information")
+      messages("Update\nLast version: " + webversion[0] + "\nLast stable version: " + webversion[1] + "\nYour version: " + version + "\n" + conclusion, "Information")
   else:
     return False
-  return True
 
 def watchVideo(flvlink): #Display it
   global download, usingcookie
   #ErrorCheck
   if flvlink.find("http://") == -1:
     messages(flvlink, "Error")
-    return 0
+    return False
   #End ErrorCheck
   opsys = sys.platform
   if opsys.find("darwin") is not -1:
@@ -81,7 +101,7 @@ def watchVideo(flvlink): #Display it
     vlcroute = "/usr/bin/vlc"
   else:
     messages("OS not Supported!","Error")
-    return 0
+    return False
     
   flvlink = "\"" + flvlink +"\""
   if os.path.exists(mplayeroute) is True:
@@ -90,16 +110,17 @@ def watchVideo(flvlink): #Display it
 	flvlink = flvlink + " -cookies -cookies-file " + savepath + "cookie"
       else:
 	flvlink = flvlink + " --load-cookies=" + savepath + "cookie"
-      kamlib.weblib.cj.save(savepath + "cookie")
+      data.cj.save(savepath + "cookie")
     watchit = mplayeroute + " " + flvlink
     usingcookie = False
   elif os.path.exists(vlcroute) is True:
     watchit = vlcroute + " " + flvlink
   else:
     messages("No mplayer or VLC detected", "Error")
-    return 0
+    return False
   if download == True:
-    result = os.system("wget -O " + savepath + "video " + flvlink) #Downloading
+    result = os.popen("wget -O " + savepath + "video " + flvlink).read() #Downloading
+    print(result)
     download = False
     if result == 1:
       messages("Download Complete", "Information")
@@ -107,51 +128,35 @@ def watchVideo(flvlink): #Display it
       messages("Download Incomplete, Canceled? No internet?", "Information")
       return False
   else:
-    result = os.system(watchit)
-  if result is not 0:
+    result = os.popen(watchit).read()
+    print(result)
+  if result.find("Starting playback...") == -1:
     messages("Unknown error with your player", "Error")
-    return 0
-  if gui is True:
-    box.setEnabled(1)
-    button.setEnabled(1)
-  print ""  #Nice visual2
-  return 1
+    return False
+  return True
   
 def response(video, typevideo): #Uses a dirty method!!
-  try:
-    if (typevideo == "youtube"): #Start youtube
-      result = data.youtube(video)
-    elif (typevideo == "nico"): #Start nicovideo
-      global download, usingcookie
-      result = data.niconico(video, mail, passw)
-      usingcookie = True #That avoids create a new cookie
-    elif (typevideo == "godtube"):
-      result = data.godtube(video)
-    elif (typevideo == "redtube"):
-      result = data.redtube(video)
-    elif (typevideo == "dailymotion"):
-      result = data.dailymotion(video)
-    elif (typevideo == "breakdotcom"):
-      result = data.breakdotcom(video)
-    elif (typevideo == "youporn"):
-      result = data.youporn(video)
-    else:
-      result = "Nothing"
-      print "Is not working..."
-  except urllib2.URLError,e:
-    if str(e.getcode()) == "404":
-      messages("That's a bad URL. I got a 404 Error", "Error")
-    else:
-      messages("You are not connected to internet", "Error")
-    return False
-  except:
-    messages("Report this error please", "Error")
-    raise
-  watchVideo(result)
-  
+  if (typevideo == "youtube"): #Start youtube
+    result = data.youtube(video)
+  elif (typevideo == "nico"): #Start nicovideo
+    global download, usingcookie
+    result = data.niconico(video, mail, passw)
+    usingcookie = True #That avoids create a new cookie
+  elif (typevideo == "godtube"):
+    result = data.godtube(video)
+  elif (typevideo == "redtube"):
+    result = data.redtube(video)
+  elif (typevideo == "dailymotion"):
+    result = data.dailymotion(video)
+  elif (typevideo == "breakdotcom"):
+    result = data.breakdotcom(video)
+  elif (typevideo == "youporn"):
+    result = data.youporn(video)
+  return watchVideo(result)
+
 def login():
-  if gui is True: #A login with GUI
-    global mail
+  if gui is "PyQt4": #A login with Qt4 GUI
+    global mail, passw
     #Objects
     login = QDialog()
     login_mailtext = QLabel("Email:")
@@ -162,7 +167,7 @@ def login():
     login_Ok = QPushButton("Ok")
     login_cancel = QPushButton("Cancel")
     login_grid = QGridLayout()
-    
+  
     #Connection to grid
     login_grid.addWidget(login_mailtext,0,0)
     login_grid.addWidget(login_mail,0,1)
@@ -171,12 +176,13 @@ def login():
     login_grid.addWidget(login_Ok,2,0)
     login_grid.addWidget(login_cancel,2,1)
     login.setLayout(login_grid)
-    
+  
     def accept():
       global mail, passw
-      mail = login_mail.text()
-      passw = login_passw.text()
-      login.done(1)
+      if mail != "" and passw != "":
+	mail = login_mail.text()
+	passw = login_passw.text()
+	login.done(1)
       
     #Signals
     login.connect(login_Ok, SIGNAL("clicked()"), accept)
@@ -189,12 +195,15 @@ def login():
     login.exec_()
     
   else: #A login without GUI
-    global passw
-    mail = raw_input("Email: ")
-    passw = getpass.getpass(prompt="Password: ")
+    while mail == "" and passw == "":
+      mail = raw_input("\nEmail: ")
+      passw = getpass.getpass(prompt="Password: ")
+  return True
     
-def work(): #Im checking if all is right, and preparation for kamlib functions
-  global video, download
+def work(video): #Im checking if all is right, and preparation for kamlib functions
+  global download
+  if debugMode == True:
+    print("Im on work method")
   #Check if .kamiltube exists, if not, create it
   try:
     import os.path
@@ -204,15 +213,12 @@ def work(): #Im checking if all is right, and preparation for kamlib functions
     messages("Kamiltube need write on your $HOME. Check your permissions", "Error")
     return False
   #End of kamiltube exists
-  
-  if gui is True:
-    video = str(box.text())
   if (video[0] == "d"): #If you want download a video
     download = True
   adcommands = additional(video) #Work with extra info.
   if adcommands is True:
     return True
-  global cookie, mail, passw
+  global mail, passw
   flvlink = ""
   validyt = video.find("ube.com/watch?v=")
   validyt2 = video.find("ube.com/v/")
@@ -227,14 +233,15 @@ def work(): #Im checking if all is right, and preparation for kamlib functions
   if validyt != validyt2: #If is youtube...
     results = response(video, "youtube" ) #youtube(video)
   elif validnico != -1: #If is niconico
-    if cookie is None:
+    if len(data.cj) == 0:
       login()
     if (mail is not None) and (passw is not None):
       results = response(video, "nico")
-    else: #If mail and passw are None
-      	messages("Invalid Username or Password", "Error")
-	cookie = None
-	return False
+    if results == False: #If nico fails
+      data.cj.clear()
+      mail = ""
+      passw = ""
+      return False
   elif validgodtube != -1: #If is godtube
     results = response(video, "godtube")
   elif validredtube != -1: #If is redtube
@@ -251,19 +258,13 @@ def work(): #Im checking if all is right, and preparation for kamlib functions
   #End Validating
   return results
   
-try: #GUI
-  if len(sys.argv) > 1:
-    if sys.argv[1] == "-s":
-      sys.argv = []
-    raise ImportError()
-  from PyQt4.QtCore import *
-  from PyQt4.QtGui import *
+def guiPyQt4():
   app = QApplication(sys.argv)
-  print "Nice, i can use PyQt4 =D"
+  widget = QWidget()
+  if debugMode == True:
+    print("Im using PyQt4 mode")
   
-  mainapp = QWidget()
   #Objets
-  gui = True
   label = QLabel("Video Address:")
   box = QLineEdit("http://www.youtube.com/watch?v=iW87vxM11tw")
   button = QPushButton("&Watch it!")
@@ -273,45 +274,70 @@ try: #GUI
   grid.addWidget(label,0,0)
   grid.addWidget(box,1,0)
   grid.addWidget(button,1,1)
-  mainapp.setLayout(grid)
-     
-  #Options and execute it!
-  mainapp.connect(button, SIGNAL("clicked()"), work)
-  box.selectAll()
-  mainapp.setWindowTitle("Kamiltube " + version)
-  mainapp.show()
+  widget.setLayout(grid)
   
-  sys.exit(app.exec_())
+  #Methods
+  def gotowork():
+    work(str(box.text()))
+    
+  #Signals and others!
+  widget.connect(button, SIGNAL("clicked()"), gotowork)
+  box.selectAll()
+  widget.setWindowTitle("Kamiltube " + version)
+  widget.show()
+  app.exec_()
 
-except ImportError: #Console only.
-  if sys.argv.count("--help") > 0 or sys.argv.count("-h") > 0:
-    sys.argv.pop()
-    sys.argv.append("help")
-    print("Shell specific help:\n\n- kamiltube --help, -h or help: This help")
-    print("- kamiltube -s: Force shell mode")
-    print("- kamiltube <video1> <video2> <videoN>: Watch video 1, then video 2... n videos")
-    print("\nGlobal help:\n")
-  if len(sys.argv):
-    argvs = sys.argv[1:]
-    for loops in argvs:
-      video = loops
+def console(): #Console only.
+  if debugMode == True:
+    print("Im using console mode")
+  while True:
+    print("\nWrite exit for quit of the application\n")
+    video = raw_input("Video Address: ")
+    if (video == "exit" or video == "quit" or video == "q"):
+      break
+    elif (len(video) == 0):
+      pass
+    else:
       try:
-        work()
+        work(video)
       except:
-	pass
+	raise
+
+def bashmode():
+  if debugMode == True:
+    print("Using bashmode")
+  for video in sys.argv:
+    try:
+      work(video)
+    except:
+      raise
+    
+#Main App
+
+print("Kamiltube Version: " + version)
+print("Kamlib Version: " + kamlib.__version__ + "\n")
+
+tempArgv = list(sys.argv)  #Check the parameters
+for x in tempArgv:
+  if x.find("-") == 0:
+    checkparameters(x)
+    sys.argv.remove(x)
+    
+try:
+  if len(sys.argv) > 0:
+    bashmode()
+  elif gui is "PyQt4" and force_nogui == False: #Run PyQt4
+    widget = guiPyQt4()
   else:
-    while True:
-      print "Write exit for quit of the application"
-      print ""
-      video = raw_input("Video Address: ")
-      print "" #Is nicer...
-      if (video == "exit" or video == "quit" or video == "q"):
-        break
-      elif (len(video) == 0):
-        pass
-      else:
-        try:
-          work()
-	except:
-	  pass
-print "Thanks for use Kamiltube"
+    console()
+except urllib2.HTTPError,e:
+  if str(e.errno()) == "404":
+    messages("That's a bad URL. I got a 404 Error", "Error")
+except urllib2.URLError:
+  messages("You are not connected to internet", "Error")
+except KeyboardInterrupt:
+  pass
+except:
+  raise
+  
+print("\nThanks for use Kamiltube")
