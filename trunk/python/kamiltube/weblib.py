@@ -68,6 +68,7 @@ def niconico(video, mail, passw):
   cj is a cookie jar, if you havent a cookie jar, only say None, i can
   create the cookie jar for you. With that, you will get the location of
   flv video and the cookie jar need it."""
+  global cj
   video = "http://www.nicovideo.jp/" + video[video.find("watch/"):]
   if video.find("?") is not -1:
     video = video[:video.find("?")]    
@@ -89,9 +90,8 @@ def niconico(video, mail, passw):
   url = "http://www.nicovideo.jp/api/getflv?v=" + nicode
   req = urllib2.Request(url)
   fvideo = urllib2.urlopen(req).read()
-      
   if fvideo == "closed=1&done=true":
-    return "Invalid Username or Password", None
+    return "Invalid Username or Password"
   #print "Logged in"
   smile = fvideo[fvideo.find("&url=")+5:fvideo.find("&link=")]
   video = methods.urltranslator(smile)
@@ -152,8 +152,7 @@ def dailymotion(video):
     
 def youporn(video):
   """Here you must insert a youporn link.
-  Doing that you will get the location of flv video.
-  Not complete"""
+  Doing that you will get the location of flv video."""
   video = "http://youporn.com/" + video[video.find("watch/"):]
   #Adult check
   values = {"user_choice": "Enter"}
