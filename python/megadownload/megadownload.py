@@ -8,7 +8,9 @@
 #
 # Version 1.0 Stable
 
-import urllib, urllib2, sys, os, math, getpass
+import urllib, urllib2, math, getpass
+os = urllib.os
+sys = os.sys
 from cookielib import MozillaCookieJar
 
 autoskip = False
@@ -28,6 +30,48 @@ def exit(): #Bye!
   print "Thanks for use this program!"
   print "Visit www.slash.cl for more info"
   sys.exit(0)
+
+def download(valid, destinypath, link): #Download algorithm.
+  try: #Download it.!
+    urllib.urlretrieve(valid,destinypath, hook)
+    print "\nDownloaded."
+  except IOError: #If IO Error
+    print "No space on disk or data write error"
+    IOresp = raw_input("Retry? Y/n/q: ").capitalize()
+    try:
+      os.remove(destinypath)
+    except:
+      pass
+    if (IOresp == "Q"):
+     sys.exit(0)
+    elif (IOresp == "Y") or (IOresp == ""): #You want try again? Resume!!!
+      download(valid, destinypath, link)
+      return 1
+  except KeyboardInterrupt:
+    try:
+      os.remove(destinypath)
+    except:
+      pass
+    print "Stopped, i have deleted the file..."
+    sys.exit(1)
+  except: #If something is wrong...
+    print "\nError."
+    raise
+    discon = raw_input("I lose the connection downloading " + link + ", try again? Y/n/q: ").capitalize()
+    try: #Try to remove the file.
+      os.remove(destinypath)
+    except: #Well, if i havent start to download, continue.
+      pass
+
+    if (discon == "") or (discon == "Y"): #You want continue?
+      download(valid, destinypath, link)
+      return True
+    elif discon == "Q": #You want exit.
+      quit()
+    else: #You want skip that file...
+      print "Skipping"
+      os.remove(destinypath)
+  return True
 
 def hook(blockNumber, blockSize, totalSize): #Is dirty!
   downloaded = blockNumber * blockSize / 1.0
@@ -51,7 +95,7 @@ def hook(blockNumber, blockSize, totalSize): #Is dirty!
 	tsizes = "Gb"
   print "\rDownloading %.3f %s of %.3f %s   " % (downloaded, size, tsize, tsizes) ,
 
-def loginmegaupload():
+def loginmegaupload(): #Try validating on megaupload server.
   cj = MozillaCookieJar()
   opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
   urllib2.install_opener(opener)
@@ -117,48 +161,10 @@ def megaupload(link):
     print "Skipped " + filename + ", url = " + link
     return True
   #End "When exist a file..."
-    
-  print "Downloading " + valid.split('/')[-1] + " as " + link
-  
-  try: #Download it.!
-    urllib.urlretrieve(valid,destinypath, hook)
-    print "\nDownloaded."
-  except IOError: #If IO Error
-    print "No space on disk or data write error"
-    IOresp = raw_input("Retry? Y/n/q: ").capitalize()
-    try:
-      os.remove(destinypath)
-    except:
-      pass
-    if (IOresp == "Q"):
-     sys.exit(0)
-    elif (IOresp == "Y") or (IOresp == ""):
-      megaupload(link)
-      return 1
-  except KeyboardInterrupt:
-    try:
-      os.remove(destinypath)
-    except:
-      pass
-    print "Stopped, i have deleted the file..."
-    sys.exit(1)
-  except: #If something is wrong...
-    print "\nError."
-    raise
-    discon = raw_input("I lose the connection downloading " + link + ", try again? Y/n/q: ").capitalize()
-    try: #Try to remove the file.
-      os.remove(destinypath)
-    except: #Well, if i havent start to download, continue.
-      pass
 
-    if (discon == "") or (discon == "Y"): #You want continue?
-      megaupload(link)
-      return True
-    elif discon == "Q": #You want exit.
-      quit()
-    else: #You want skip that file...
-      print "Skipping"
-      os.remove(destinypath)
+  print "Downloading " + valid.split('/')[-1] + " as " + link
+  download(valid, destinypath, link) #Start to download.
+  
   return True
   
 def megalink(link): #Is a valid link or strange text?

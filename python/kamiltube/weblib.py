@@ -20,10 +20,7 @@ def youtube(video):
   """Here you must insert a youtube link called video. Should be partially uncomplete the link.
   Doing that you will get the location of flv video or some error <non link>."""
   if video.find("?v=") == -1:
-    if video.find("/v/") == -1:
-      return "Not a valid youtube video."
-    else:
-      video = "http://www.youtube.com/watch?v=" + video[video.find("/v/")+3:]
+    video = "http://www.youtube.com/watch?v=" + video[video.find("/v/")+3:]
   else:
     video = "http://www.youtube.com/watch" + video[video.find("?v="):]
   resp = urllib2.urlopen(video).read()
@@ -90,7 +87,9 @@ def niconico(video, mail, passw):
   url = "http://www.nicovideo.jp/api/getflv?v=" + nicode
   req = urllib2.Request(url)
   fvideo = urllib2.urlopen(req).read()
-  if fvideo == "closed=1&done=true":
+  if fvideo.find("r=invalid_thread&done=true") != -1:
+    return "Invalid Video"
+  elif fvideo == "closed=1&done=true":
     return "Invalid Username or Password"
   #print "Logged in"
   smile = fvideo[fvideo.find("&url=")+5:fvideo.find("&link=")]
