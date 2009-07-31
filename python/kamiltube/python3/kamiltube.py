@@ -8,7 +8,7 @@
 #
 version = "0.7.4_alpha1"
 
-import sys, getpass, os, urllib2
+import sys, getpass, os, urllib.request, urllib.error, urllib.parse
 
 try: #Finding kamlib
   import kamlib.weblib
@@ -38,8 +38,8 @@ try:
 except ImportError:
   pass
 try:
-  import Tkinter as Tk
-  import tkMessageBox as tkMB
+  import tkinter as Tk
+  import tkinter.messagebox as tkMB
   guisupport.append("Tk")
 except ImportError:
   pass
@@ -52,7 +52,7 @@ def checkparameters(x): #For something
   if x.find("gui") > 0:
     print("Supported GUIs:")
     for x in guisupport:
-      print("* " + x)
+      print(("* " + x))
     sys.exit(True)
   if x.find("d") > 0 and debugMode is not True:
     debugMode = True
@@ -78,7 +78,7 @@ def messages(message,title): #Messages
   elif gui is "Tk":
     tkMB.showinfo(title, message)
   else:
-    print("* " + message)
+    print(("* " + message))
   return True
 
 def additional(link): #Not video links.
@@ -90,7 +90,7 @@ def additional(link): #Not video links.
   elif val == "Website":
     messages("The website of this application is www.slash.cl, visit it for check updates or others","Information")
   elif val == "Update":
-    webversion = (urllib2.urlopen("http://www.slash.cl/kamiltube/version").read()).split("\n")
+    webversion = (urllib.request.urlopen("http://www.slash.cl/kamiltube/version").read()).split("\n")
     if webversion[1] > version:
       conclusion = "Exist a update for you, please check www.slash.cl for more info"
     elif webversion[1] == version:
@@ -179,10 +179,10 @@ def response(video, typevideo): #Uses a dirty method!!
     elif (typevideo == "youporn"):
       result = data.youporn(video)
     return watchVideo(result)
-  except urllib2.HTTPError,e: 
+  except urllib.error.HTTPError as e: 
     if str(e.errno()) == "404":
       messages("That's a bad URL. I got a 404 Error", "Error")
-  except urllib2.URLError:
+  except urllib.error.URLError:
     messages("You are not connected to internet, ISP problems or server down", "Error")
   except:
     raise
@@ -218,8 +218,8 @@ def login(video):
       mail = login_mail.text()
       passw = login_passw.text()
       if mail != "" and passw != "":
-	login.close()
-	return work(video)
+        login.close()
+        return work(video)
       
     #Signals
     login.connect(login_Ok, SIGNAL("clicked()"), accept)
@@ -237,8 +237,8 @@ def login(video):
       mail = login_mail.get()
       passw = login_passw.get()
       if mail != "" and passw != "":
-	login.destroy()
-	return work(video)
+        login.destroy()
+        return work(video)
 	
     #Objects
     login = Tk.Toplevel()
@@ -263,7 +263,7 @@ def login(video):
     login.mainloop()
   else: #A login without GUI
     while mail == "" or passw == "":
-      mail = raw_input("\nEmail: ")
+      mail = input("\nEmail: ")
       passw = getpass.getpass(prompt="Password: ")
       return work(video)
   return False
@@ -392,8 +392,8 @@ def console(): #Console only.
     print("Im using console mode")
   while True:
     print("\nWrite exit for quit of the application\n")
-    video = raw_input("Video Address: ")
-    if (video == "exit" or video == "quit" or video == "q"):
+    video = input("Video Address: ")
+    if video == "exit" or video == "quit" or video == "q":
       break
     elif (len(video) == 0):
       pass
@@ -401,7 +401,7 @@ def console(): #Console only.
       try:
         work(video)
       except:
-	raise
+        raise
 
 def bashmode():
   sys.argv.reverse()
@@ -416,8 +416,8 @@ def bashmode():
       raise
 
 def main(): #Main App
-  print("Kamiltube Version: " + version)
-  print("Kamlib Version: " + kamlib.__version__ + "\n")
+  print(("Kamiltube Version: " + version))
+  print(("Kamlib Version: " + kamlib.__version__ + "\n"))
 
   tempArgv = list(sys.argv)  #Check the parameters
   for x in tempArgv:

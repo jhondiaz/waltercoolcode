@@ -10,11 +10,11 @@
 # but you are free for use it for any GPL-2 application.
 #
 
-import kamlib.methods, cookielib, urllib, urllib2, os
+import kamlib.methods, http.cookiejar, urllib.request, urllib.parse, urllib.error, urllib.request, urllib.error, urllib.parse, os
 
 mail = None
 passw = None
-cj = cookielib.MozillaCookieJar()
+cj = http.cookiejar.MozillaCookieJar()
 
 def youtube(video):
   """Here you must insert a youtube link called video. Should be partially uncomplete the link.
@@ -23,7 +23,7 @@ def youtube(video):
     video = "http://www.youtube.com/watch?v=" + video[video.find("/v/")+3:]
   else:
     video = "http://www.youtube.com/watch" + video[video.find("?v="):]
-  resp = str(urllib2.urlopen(video).read())
+  resp = str(urllib.request.urlopen(video).read())
   #Protection
   if resp.find("removed due to terms of use violation.") is not -1:
     return "This video has been removed due to terms of use violation."
@@ -54,8 +54,8 @@ def youtube(video):
     qual = ""
   link = "http://www.youtube.com/get_video?" + video_id + "&" + video_t + qual
   try:
-    urllib2.urlopen(link)
-  except urllib2.HTTPError:
+    urllib.request.urlopen(link)
+  except urllib.error.HTTPError:
     return "You cant watch this video using this quality, change it"
   return link
 
@@ -73,20 +73,20 @@ def niconico(video, mail, passw):
   cj.clear_expired_cookies()
   if len(cj) is 0:
     #print "Trying to login"
-    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-    urllib2.install_opener(opener)
+    opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
+    urllib.request.install_opener(opener)
     url = "https://secure.nicovideo.jp/secure/login?site=niconico"
     values = {"mail": mail, "password": passw, "next_url": "/watch/" + nicode }
-    params = urllib.urlencode(values)
-    req = urllib2.Request(url, params)
-    urllib2.urlopen(req)
+    params = urllib.parse.urlencode(values)
+    req = urllib.request.Request(url, params)
+    urllib.request.urlopen(req)
     
   #req = urllib2.Request("http://www.nicovideo.jp/watch/" + nicode)
   #urllib2.urlopen(req)  
   
   url = "http://www.nicovideo.jp/api/getflv?v=" + nicode
-  req = urllib2.Request(url)
-  fvideo = str(urllib2.urlopen(req).read())
+  req = urllib.request.Request(url)
+  fvideo = str(urllib.request.urlopen(req).read())
   if fvideo.find("r=invalid_thread&done=true") != -1:
     return "Invalid Video"
   elif fvideo.find("&link=") == -1:
@@ -110,11 +110,11 @@ def godtube(video):
   
   video = "http://www.godtube.com/" + video[video.find("view_video.php?"):]
   #print video
-  resp = str(urllib2.urlopen(video).read())
+  resp = str(urllib.request.urlopen(video).read())
   link = "http://video.godtube.com/" + resp[resp.find("video=flvideo")+6:resp.find("flv&viewkey")+3]
   try:
-    urllib2.urlopen("http://video.godtube.com/flvideo2/c7e177079d3786edb467/194613.flv")
-  except urllib2.HTTPError:
+    urllib.request.urlopen("http://video.godtube.com/flvideo2/c7e177079d3786edb467/194613.flv")
+  except urllib.error.HTTPError:
     return "Unknown Error"
   return link
   
@@ -126,7 +126,7 @@ def breakdotcom(video):
     video = "http://my.bre" + video[video.find("ak.com/"):]
   else:
     video = "http://www.bre" + video[video.find("ak.com/"):]
-  resp = str(urllib2.urlopen(video).read())
+  resp = str(urllib.request.urlopen(video).read())
   a = resp[resp.find("videoPath = \"")+13:]
   a = a[:a.find("\" + s")]
     #resp.find("'+sGlobalContentFilePath+'/'+sGlobalFileName+'.flv'")] #Start
@@ -142,7 +142,7 @@ def dailymotion(video):
   I have a small error."""
   
   video = "http://www.dailymo" + video[video.find("tion.com"):]
-  resp = str(urllib2.urlopen(video).read())
+  resp = str(urllib.request.urlopen(video).read())
   resp1 = resp[resp.find("&videoUrl=")+10:]
   link = resp1[:resp1.find("&embedUrl=")]
   link = methods.urltranslator(link)
@@ -155,9 +155,9 @@ def youporn(video):
   video = "http://youporn.com/" + video[video.find("watch/"):]
   #Adult check
   values = {"user_choice": "Enter"}
-  params = urllib.urlencode(values)
-  req = urllib2.Request(video, params)
-  web = str(urllib2.urlopen(req).read())
+  params = urllib.parse.urlencode(values)
+  req = urllib.request.Request(video, params)
+  web = str(urllib.request.urlopen(req).read())
   #End adult check
   resp1 = web[web.find("http://download.youporn.com/download/"):]
   vid = resp1[:resp1.find("\">FLV")]
