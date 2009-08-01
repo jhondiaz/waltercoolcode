@@ -23,7 +23,7 @@ def youtube(video):
     video = "http://www.youtube.com/watch?v=" + video[video.find("/v/")+3:]
   else:
     video = "http://www.youtube.com/watch" + video[video.find("?v="):]
-  resp = str(urllib.request.urlopen(video).read())
+  resp = bytes.decode(urllib.request.urlopen(video).read())
   #Protection
   if resp.find("removed due to terms of use violation.") is not -1:
     return "This video has been removed due to terms of use violation."
@@ -86,7 +86,7 @@ def niconico(video, mail, passw):
   
   url = "http://www.nicovideo.jp/api/getflv?v=" + nicode
   req = urllib.request.Request(url)
-  fvideo = str(urllib.request.urlopen(req).read())
+  fvideo = bytes.decode(urllib.request.urlopen(req).read())
   if fvideo.find("r=invalid_thread&done=true") != -1:
     return "Invalid Video"
   elif fvideo.find("&link=") == -1:
@@ -126,7 +126,7 @@ def breakdotcom(video):
     video = "http://my.bre" + video[video.find("ak.com/"):]
   else:
     video = "http://www.bre" + video[video.find("ak.com/"):]
-  resp = str(urllib.request.urlopen(video).read())
+  resp = bytes.decode(urllib.request.urlopen(video).read())
   a = resp[resp.find("videoPath = \"")+13:]
   a = a[:a.find("\" + s")]
     #resp.find("'+sGlobalContentFilePath+'/'+sGlobalFileName+'.flv'")] #Start
@@ -142,10 +142,10 @@ def dailymotion(video):
   I have a small error."""
   
   video = "http://www.dailymo" + video[video.find("tion.com"):]
-  resp = str(urllib.request.urlopen(video).read())
+  resp = bytes.decode(urllib.request.urlopen(video).read())
   resp1 = resp[resp.find("&videoUrl=")+10:]
   link = resp1[:resp1.find("&embedUrl=")]
-  link = methods.urltranslator(link)
+  link = kamlib.methods.urltranslator(link)
   #link = "http://www.dailymotion.com/" + link
   return link
     
@@ -157,7 +157,7 @@ def youporn(video):
   values = {"user_choice": "Enter"}
   params = urllib.parse.urlencode(values)
   req = urllib.request.Request(video, params)
-  web = str(urllib.request.urlopen(req).read())
+  web = bytes.decode(urllib.request.urlopen(req).read())
   #End adult check
   resp1 = web[web.find("http://download.youporn.com/download/"):]
   vid = resp1[:resp1.find("\">FLV")]

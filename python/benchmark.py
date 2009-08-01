@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 #
 # Developed by WalterCool! under GPL-2 License
@@ -13,7 +13,7 @@ import time
 
 a = 0.0
 b = 0
-print "PyWalterCool Benchmark"
+print("PyWalterCool Benchmark")
 def task():
   global a,b
   while(b is 0):
@@ -25,7 +25,7 @@ t2 = threading.Thread(target=task)
 t3 = threading.Thread(target=task)
 t4 = threading.Thread(target=task)
 
-print "Eins Zwei Drei Vier!"
+print("Eins Zwei Drei Vier!")
 t1.start()
 t2.start()
 t3.start()
@@ -38,5 +38,5 @@ t2.join()
 t3.join()
 t4.join()
 
-print "Finished!"
-print "Tu PyWalterCool Benchmark es de: ", round(a*2/1000000,3)
+print ("Finished!")
+print("Tu PyWalterCool Benchmark es de: " + str(round(a*2/1000000,3)))
