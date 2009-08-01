@@ -145,7 +145,7 @@ def dailymotion(video):
   resp = str(urllib2.urlopen(video).read())
   resp1 = resp[resp.find("&videoUrl=")+10:]
   link = resp1[:resp1.find("&embedUrl=")]
-  link = methods.urltranslator(link)
+  link = kamlib.methods.urltranslator(link)
   #link = "http://www.dailymotion.com/" + link
   return link
     

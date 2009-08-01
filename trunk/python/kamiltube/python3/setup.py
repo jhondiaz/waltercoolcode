@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 import sys, shutil, os
@@ -11,7 +11,6 @@ if sys.platform == "darwin" or sys.platform == "win32" or sys.platform == "freeb
   sys.exit(1)
 version = str(sys.version.split())
 version = version[2] + "." + version[4]
-print(version)
 dirpy = "/usr/lib/python" + version + "/site-packages/kamlib" 
 
 if sys.argv.count("install") > 0:

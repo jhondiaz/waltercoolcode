@@ -10,13 +10,13 @@ The listed support is:
 - Redtube (http://www.redtube.com) - Not working
 - Godtube (http://www.tangle.com) - Not working
 - Break.com (http://www.break.com)
-- DailyMotion (http://www.dailymotion.com)
-- YouPorn (http://www.youporn.com) - I need create a cookie
+- DailyMotion (http://www.dailymotion.com) - Not working
+- YouPorn (http://www.youporn.com)
 
 If you want read the licence, open licence.txt
 
 If you want test it you must do: "python kamiltube.py"
 
-If you want install it, execute with sudo or root "python setup.py install"
+If you want install it, execute as root or sudo "python setup.py install"
 
-If you want uninstall it, execute with sudo or root "python setup.py uninstall"
+If you want uninstall it, execute as root or sudo "python setup.py uninstall"

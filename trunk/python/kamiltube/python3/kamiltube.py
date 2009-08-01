@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 #
 # Developed by WalterCool! under GPL-2 License
@@ -90,7 +90,7 @@ def additional(link): #Not video links.
   elif val == "Website":
     messages("The website of this application is www.slash.cl, visit it for check updates or others","Information")
   elif val == "Update":
-    webversion = (urllib.request.urlopen("http://www.slash.cl/kamiltube/version").read()).split("\n")
+    webversion = bytes.decode(urllib.request.urlopen("http://www.slash.cl/kamiltube/version").read()).split("\n")
     if webversion[1] > version:
       conclusion = "Exist a update for you, please check www.slash.cl for more info"
     elif webversion[1] == version:
