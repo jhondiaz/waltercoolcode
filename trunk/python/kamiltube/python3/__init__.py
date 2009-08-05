@@ -11,6 +11,6 @@ http://www.slash.cl/kamiltube for changes and report bugs.
 """
 
 __all__ = [""]
-__version__ = "0.6.5"
+__version__ = "0.6.6"
 __author__ = "Pablo Cholaky <waltercool@slash.cl>"
 __license__ = "GPL-2"
