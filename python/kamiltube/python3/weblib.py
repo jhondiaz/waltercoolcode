@@ -162,3 +162,13 @@ def youporn(video):
   resp1 = web[web.find("http://download.youporn.com/download/"):]
   vid = resp1[:resp1.find("\">FLV")]
   return vid
+
+def blip(video):
+    """Here you must inser a blip.tv link
+    Doing that you will get the location of flv video"""
+    video = "http://blip.tv" + video[video.find("/file/"):]
+    req = urllib.request.Request(video)
+    web = bytes.decode(urllib.request.urlopen(req).read())
+    resp1 = web[web.find("player.setPrimaryMediaUrl(")+27:]
+    vid = resp1[:resp1.find("?referrer")]
+    return vid

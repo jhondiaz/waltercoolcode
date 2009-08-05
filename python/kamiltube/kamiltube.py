@@ -178,6 +178,8 @@ def response(video, typevideo): #Uses a dirty method!!
       result = data.breakdotcom(video)
     elif (typevideo == "youporn"):
       result = data.youporn(video)
+    elif (typevideo == "blip"):
+      result = data.blip(video)
     return watchVideo(result)
   except urllib2.HTTPError,e: 
     if str(e.errno()) == "404":
@@ -297,6 +299,7 @@ def work(video): #Im checking if all is right, and preparation for kamlib functi
   validyoutube = video.find("video/video.php?")
   validbreakdotcom = video.find("ak.com/")
   validyouporn = video.find("orn.com/watch/")
+  validblip = video.find("lip.tv/file")
   #Start validating...
   if validyt != validyt2: #If is youtube...
     results = response(video, "youtube" ) #youtube(video)
@@ -322,6 +325,8 @@ def work(video): #Im checking if all is right, and preparation for kamlib functi
     results = response(video, "breakdotcom")
   elif validyouporn != -1: #If is youporn
     results = response(video, "youporn")
+  elif validblip != -1: #IF is blip
+    results = response(video, "blip")
   else:
     messages("Bad video url", "Error")
     return False
