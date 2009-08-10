@@ -37,7 +37,7 @@ def youtube(video):
     return "Is a video for 18+, you must be logged in, but you cant now."
   elif resp.find("This is a private video.") is not -1:
     return "Private video."
-  elif resp.find("This video is not available in your country.") is not -1:
+  elif resp.find("This video is not available in your country") is not -1:
     return "This video is not available in your country."
   elif resp.find("The video you have requested is not available.") is not -1:
     return "Video not available, maybe the user is uploading it."
