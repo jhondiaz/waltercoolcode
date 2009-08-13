@@ -184,8 +184,6 @@ def response(video, typevideo): #Uses a dirty method!!
   except urllib.error.HTTPError as e: 
     if str(e.errno()) == "404":
       messages("That's a bad URL. I got a 404 Error", "Error")
-  except urllib.error.URLError:
-    messages("You are not connected to internet, ISP problems or server down", "Error")
   except:
     raise
 
