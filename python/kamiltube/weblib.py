@@ -42,17 +42,17 @@ def youtube(video):
   elif resp.find("The video you have requested is not available.") is not -1:
     return "Video not available, maybe the user is uploading it."
   #End Protection
-  cut1 = resp[resp.find("video_id="):]
-  video_id = cut1[:cut1.find("&")]
+  cut1 = resp[resp.find('video_id"')+12:]
+  video_id = cut1[:cut1.find('",')]
 
-  cut2 = resp[resp.find("&t=")+1:]
-  video_t = cut2[:cut2.find("&")]
+  cut2 = resp[resp.find('"t":')+6:]
+  video_t = cut2[:cut2.find('",')]
 
   if video.find("&fmt=") is not -1:
     qual = "&fmt=" + video[video.find("fmt=")+4:video.find("fmt=")+6]
   else:
     qual = ""
-  link = "http://www.youtube.com/get_video?" + video_id + "&" + video_t + qual
+  link = "http://www.youtube.com/get_video?video_id=" + video_id + "&t=" + video_t + qual
   try:
     urllib2.urlopen(link)
   except urllib2.HTTPError:
