@@ -46,8 +46,8 @@ def download(valid, destinypath, link): #Download algorithm.
     if (IOresp == "Q"):
      sys.exit(0)
     elif (IOresp == "Y") or (IOresp == ""): #You want try again? Resume!!!
-      download(valid, destinypath, link)
-      return 1
+      megadownload(link)
+      return True
   except KeyboardInterrupt:
     try:
       os.remove(destinypath)
@@ -58,20 +58,6 @@ def download(valid, destinypath, link): #Download algorithm.
   except: #If something is wrong...
     print("\nError.")
     raise
-    discon = input("I lose the connection downloading", link, ", try again? Y/n/q: ").capitalize()
-    try: #Try to remove the file.
-      os.remove(destinypath)
-    except: #Well, if i havent start to download, continue.
-      pass
-
-    if (discon == "") or (discon == "Y"): #You want continue?
-      download(valid, destinypath, link)
-      return True
-    elif discon == "Q": #You want exit.
-      quit()
-    else: #You want skip that file...
-      print("Skipping")
-      os.remove(destinypath)
   return True
 
 def hook(blockNumber, blockSize, totalSize): #Is dirty!
@@ -164,12 +150,6 @@ def megaupload(link):
     print("Skipped " + filename + ", url = " + link)
     return True
   #End "When exist a file..."
-
-  #Protection from strange problematic links
-  if int(urllib.request.urlopen(valid).headers.get("content-length")) < 0: 
-     print('I got a wrong size, retrying')
-     megadownload(link)
-     return True
 
   print("Downloading " + valid.split('/')[-1] + " as " + link)
   download(valid, destinypath, link) #Start to download.
