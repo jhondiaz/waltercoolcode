@@ -406,7 +406,7 @@ def console(): #Console only.
       except:
         raise
 
-def bashmode():
+def bashmode(): #Method for std input
   sys.argv.reverse()
   sys.argv.pop()
   sys.argv.reverse()
@@ -436,12 +436,12 @@ def main(): #Main App
     guiTk()
   else:
     console()
+  print("\nThanks for use Kamiltube")
 
 try:
-  main()
-except KeyboardInterrupt:
+  if __name__ == '__main__':
+    main()
+except (KeyboardInterrupt, EOFError):
   pass
-except EOFError:
-  pass
-  
-print("\nThanks for use Kamiltube")
+except:
+  raise
