@@ -112,7 +112,7 @@ def loginmegaupload(): #Try validating on megaupload server.
   
 def checkmegaupload(links):
   try:
-    url = urllib.request.urlopen(links).read()
+    url = bytes.decode(urllib.request.urlopen(links).read())
   except urllib.error.URLError:
     print("Not connected to internet!")
     exit()
