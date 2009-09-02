@@ -53,13 +53,15 @@ def main():
   global param
   disi = {'40 24 0\n':0, '60 24 0\n':1, '70 24 0\n':2, '85 24 0\n':3, '100 24 1\n':4, '105 24 1\n':5}
   current = disi[filebuffer.readline()] #Read the current value
-  if param is '':
+  if param == 'menu':
     param = menu(current)
+  else:
+    if current is 2:
+      param = 4
+    else:
+      param = 2
 
-  if current != 2:
-    reach(2,current,disi) #Normalize
-  if param != 2: #Avoid do the same if you want normalize
-    reach(param,2,disi)
+    reach(param,current,disi)
 
 if __name__ == '__main__':
   main()

@@ -11,32 +11,31 @@ import threading
 from math import *
 import time
 
-a = 0.0
 b = 0
+x = []
+aver = 0
+threads = 11
 print("PyWalterCool Benchmark")
-def task():
-  global a,b
-  while(b is 0):
-    sin(2*pi*e*a)
-    a += 1.1
+class task(threading.Thread):
+  def run(self):
+    self.data = 0
+    global a,b
+    while(b == 0):
+      sin(2*pi*e*self.data)
+      self.data += 1.0
 
-t1 = threading.Thread(target=task)
-t2 = threading.Thread(target=task)
-t3 = threading.Thread(target=task)
-t4 = threading.Thread(target=task)
+  def finish(self):
+    return self.data/1000
 
 print("Eins Zwei Drei Vier!")
-t1.start()
-t2.start()
-t3.start()
-t4.start()
+for a in range(threads):
+  x.append( task() )
+  x[a].start() 
 time.sleep(3)
 b = 1
-
-t1.join()
-t2.join()
-t3.join()
-t4.join()
-
+for a in range(threads):
+  x[a] = x[a].finish()
+  aver += x[a]
 print ("Finished!")
-print("Tu PyWalterCool Benchmark es de: " + str(round(a*2/1000000,3)))
+x.sort()
+print("Your PyWaltercool MAX:", max(x), 'MIN:', min(x), 'AVERAGE:',aver/threads)
