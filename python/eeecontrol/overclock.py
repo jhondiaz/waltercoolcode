@@ -61,7 +61,8 @@ def main():
     else:
       param = 2
 
-    reach(param,current,disi)
+  ready = reach(param,current,disi)
+  return ready
 
 if __name__ == '__main__':
   main()

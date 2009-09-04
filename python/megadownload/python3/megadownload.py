@@ -46,8 +46,7 @@ def download(valid, destinypath, link): #Download algorithm.
     if (IOresp == "Q"):
      sys.exit(0)
     elif (IOresp == "Y") or (IOresp == ""): #You want try again? Resume!!!
-      megadownload(link)
-      return True
+      return False
   except KeyboardInterrupt:
     try:
       os.remove(destinypath)
@@ -89,8 +88,10 @@ def loginmegaupload(): #Try validating on megaupload server.
   opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
   urllib.request.install_opener(opener)
   url = "http://www.megaupload.com/?c=login"
-  username = input("Username: ")
+  username = input("\nUsername: ")
   password = getpass.getpass(prompt="Password: ")
+  if not (username != '' and password != ''):
+    return False
   print("Logging in")
   params = urllib.parse.urlencode({"login":1, "redir":1, "username":username, "password":password})
   req = urllib.request.Request(url, params)
@@ -99,16 +100,20 @@ def loginmegaupload(): #Try validating on megaupload server.
   except urllib.error.URLError: #If you arent on internet.
     print("Not connected to internet!")
     exit()
-  if checklogin.find("\">Sign out</a>") == -1:
+  if checklogin.find("Username and password do not match. Please try again!") > 1:
     print("Username or password invalid")
     question = input("Try again? Y/n: ").capitalize() #You are failed on a word?
-    if question == "N":
+    if question == "N" or question == 'Q':
       quit()
     else:
       cj = loginmegaupload()
       return cj
-  print("Logged")
-  return cj #Maybe i can use it on future.
+  elif checklogin.find('\">Sign out</a>') > 0:
+    print("Logged")
+    return cj #Maybe i can use it on future.
+  else:
+    print('Error')  
+  return False
   
 def checkmegaupload(links):
   try:
@@ -152,7 +157,9 @@ def megaupload(link):
   #End "When exist a file..."
 
   print("Downloading " + valid.split('/')[-1] + " as " + link)
-  download(valid, destinypath, link) #Start to download.
+  dow = download(valid, destinypath, link) #Start to download.
+  if dow is False: #If fail
+    megaupload(link)
   
   return True
   
@@ -163,61 +170,66 @@ def megalink(link): #Is a valid link or strange text?
     return "nolink"
   return fixlink[start:]
 
-try: #Open the file.
-  f = open(path + "links")
-except:
-  print("You need a \"links\" file with the urls.")
-  quit()
-totallines = 0
-validlinks = []
-deadlink = []
-downlink = []
-livelink = []
-for lineas in f:
-  lines = megalink(lineas)
-  if lines != "nolink":
-    validlinks += [lines]
-
-checklinks = input("You want check the links? Y/n/q: ").capitalize()
-if checklinks == "Q": #You want quit.
-  exit()
-elif checklinks != "N": #You want check it.
-  print("Checking for dead links...")
-  x = 0
-  for lineas in validlinks:
-    stats = checkmegaupload(lineas)
-    if stats == "live link":
-      livelink += [lineas]
-    elif stats == "down link":
-      downlink += [lineas]
-    else:
-      deadlink += [lineas]
-    x += 1
-    sys.stdout.write( str(x) + " ")
-    sys.stdout.flush() 
-  print('')
-  print(len(livelink), "links ready for download")
-  print(len(downlink), 'links are temporarily down')
-  for lineas in downlink:
-    print('- Link down:', lineas)
-  print(len(deadlink), " links are dead")
-  for lineas in deadlink:
-    print("- Link dead:", lineas)
-  if len(livelink) == 0:
-    print("Sorry, you cant download files on your list.")
+def main():
+  try: #Open the file.
+    f = open(path + "links")
+  except:
+    print("You need a \"links\" file with the urls.")
     quit()
-    if len(downlink) != 0: #You cant download a file
-      print("Try again when this", downlink, "become available")
-      quit()
-  cont = input("Continue? Y/n: ").capitalize() #Are you happy with resuts?
-else:
-  for lineas in validlinks:
+  totallines = 0
+  validlinks = []
+  deadlink = []
+  downlink = []
+  livelink = []
+  for lineas in f:
     lines = megalink(lineas)
     if lines != "nolink":
-      livelink += [lineas]
-  cont = ""
+      validlinks += [lines]
 
-if cont != "N":
-  loginmegaupload() #Log it.
-  for lineas in livelink:
-    megaupload(lineas) #Download the N files.
+  checklinks = input("You want check the links? Y/n/q: ").capitalize()
+  if checklinks == "Q": #You want quit.
+    exit()
+  elif checklinks != "N": #You want check it.
+    print("Checking for dead links...")
+    x = 0
+    for lineas in validlinks:
+      stats = checkmegaupload(lineas)
+      if stats == "live link":
+        livelink += [lineas]
+      elif stats == "down link":
+        downlink += [lineas]
+      else:
+        deadlink += [lineas]
+      x += 1
+      sys.stdout.write( str(x) + " ")
+      sys.stdout.flush() 
+    print('')
+    print(len(livelink), "links ready for download")
+    print(len(downlink), 'links are temporarily down')
+    for lineas in downlink:
+      print('- Link down:', lineas)
+    print(len(deadlink), " links are dead")
+    for lineas in deadlink:
+      print("- Link dead:", lineas)
+    if len(livelink) == 0:
+      print("Sorry, you cant download files on your list.")
+      quit()
+      if len(downlink) != 0: #You cant download a file
+        print("Try again when this", downlink, "become available")
+        quit()
+    cont = input("Continue? Y/n: ").capitalize() #Are you happy with resuts?
+  else:
+    for lineas in validlinks:
+      lines = megalink(lineas)
+      if lines != "nolink":
+        livelink += [lineas]
+    cont = ""
+
+  if cont != "N":
+    while not loginmegaupload(): #Log it
+      pass
+    for lineas in livelink:
+      megaupload(lineas) #Download the N files.
+
+if __name__ == '__main__':
+  main()
