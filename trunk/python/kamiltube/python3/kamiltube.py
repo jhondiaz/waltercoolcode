@@ -8,7 +8,7 @@
 #
 version = "0.7.4_alpha1"
 
-import sys, getpass, os, urllib.request, urllib.error, urllib.parse
+import sys, getpass, os, urllib.request, urllib.error, urllib.parse, subprocess
 
 try: #Finding kamlib
   import kamlib.weblib
