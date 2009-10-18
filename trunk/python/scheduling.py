@@ -1,11 +1,19 @@
 #!/usr/bin/python3
+# -*- coding: utf-8 -*-
+#
+# Developed by WalterCool! under GPL-2 License
+# Feel free of modify (using GPL-2 rules) or reporting bugs
+# mailto: waltercool [at] slash [dot] cl
+# http://www.slash.cl
+#
 
+version = 0.1
 listpro = []
 listsched = ["FCFS","Round Robin","SJF","A-SJF"] #Supported scheduling
 sched = "FCFS" #Default schedule
 
 totalpro = 0 #Number of process... like Linux!
-RRHelper = ["4",None] #Default Round Robin Helper = Used quantum, Current process
+sysList = ["4",None] #Default Round Robin Helper = Used quantum, Current process
 time = 0 #Thats processor time
 
 #EXTRA FUNCTIONS
@@ -41,30 +49,30 @@ def FCFS(): #FCFS scheduling
   return True
   
 def RR(): #Round Robin scheduling... im a bit lost... i must comment all.
-  numProc = itemfind(RRHelper[1],listpro) #numProc is Process array number.
+  numProc = itemfind(sysList[1],listpro) #numProc is Process array number.
   if numProc == -1:
-    RRHelper[1] = listpro[0] #Just assign first process if Process fault.
+    sysList[1] = listpro[0] #Just assign first process if Process fault.
     numProc = 0
   existProc = listpro[numProc] #existProc is current process pointer.
-  if RRHelper[1].add(): #If process finished, add data too.
+  if sysList[1].add(): #If process finished, add data too.
     listpro.pop(numProc)
-    if len(listpro) > 0: #Avoid a error with listpro = 0 and listpro[existProc+1] because is not there
-      try:  #A small algorithm for change process
-        RRHelper[1] = listpro[numProc]
-        newProc = numProc+1
+    if len(listpro) > 0: #Avoid a error with listpro = 0 and listpro[existProc+1] because is not there.
+      try:  #A small algorithm for change process.
+        sysList[1] = listpro[numProc]
+        newProc = numProc+1 #NewProc is the new process.
       except IndexError:  #If i was on last item... just back to 0
-        RRHelper[1] = listpro[0]
+        sysList[1] = listpro[0]
         newProc = listpro[0].number
 
-    return "Process " + str(existProc.number) + " has been finished!
-  RRHelper[1].quantum+=1
-  if RRHelper[1].quantum == int(RRHelper[0]): #If quantum is fully used.
-    RRHelper[1].quantum = 0 #Reset quantum
-    try:  #Copy/Paste from above algorithm
-      RRHelper[1] = listpro[numProc+1]
+    return "Process " + str(existProc.number) + " has been finished!"
+  sysList[1].quantum+=1
+  if sysList[1].quantum == int(sysList[0]): #If quantum is fully used.
+    sysList[1].quantum = 0 #Reset quantum.
+    try:  #Copy/Paste from above algorithm.
+      sysList[1] = listpro[numProc+1]
       newProc = numProc+1
     except IndexError:  
-      RRHelper[1] = listpro[0]
+      sysList[1] = listpro[0]
       newProc = listpro[0].number
     
     if newProc != existProc.number:
@@ -72,11 +80,29 @@ def RR(): #Round Robin scheduling... im a bit lost... i must comment all.
   return True
   
 def SJF(): #Shortest Job First scheduling
-  print("Not implemented")
+  global sysList
+  if sysList[1] == None:
+    sysList[1] = listpro[0]
+    for a in listpro:
+      if sysList[1].length > a.length:
+        sysList[1] = a
+  if sysList[1].add(): #If process finished
+    listpro.pop( itemfind(sysList[1], listpro))
+    x = sysList[1]
+    sysList[1] = None
+    return "Process " + str(x.number) + " has been finished!"
   return True
   
 def ASJF(): #Apropiative Shortest Job First
-  print("Not implemented")
+  global sysList
+  if sysList[1] == None:
+    sysList[1] = listpro[0]
+  for a in listpro:
+    if sysList[1].length > a.length:
+      sysList[1] = a
+  if sysList[1].add(): #If process finished
+    listpro.pop( itemfind(sysList[1], listpro))
+    return "Process " + str(sysList[1].number) + " has been finished!"
   return True
   
 def insert(): #Add a process
@@ -101,8 +127,8 @@ def data(): #Show useful data
   global listpro
   print("** Data")
   print("*Sched: " + sched)
-  if sched == "Round Robin":
-    print("*Round Robin Data: Quantum: " + str(RRHelper[1].quantum) + "/" + RRHelper[0])
+  if sched == "Round Robin" and sysList[1] != None:
+    print("*Round Robin Data: Quantum: " +  str(sysList[1].quantum) + "/" + sysList[0])
   for a in range(0,len(listpro)):
     print("*Process " + listpro[a].number + " on " + str(listpro[a].completed) + "/" + str(listpro[a].length))
   print("")
@@ -111,14 +137,12 @@ def data(): #Show useful data
 def changeScheduling(): #Change your current scheduling
   global sched
   if len(listpro) > 0:
-    print("* You are going to change a schedule with added process... be aware!")
-
-  print("Supported schedules",listsched)
+    print("* You are going to change a schedule with added process... be aware! You will restart current schedule order")
+  print("- Supported schedules", listsched)
   s = input("Current scheduling: " + sched + " New scheduling: ")
   if listsched.count(s) > 0:
     sched = s
-    if sched == "Round Robin":
-      RRHelper[1] = listpro[0]
+    sysList[1] = None
     print("Using " + sched + " scheduling")
     return True
   else:
@@ -126,16 +150,17 @@ def changeScheduling(): #Change your current scheduling
     return False
   
 def changeQuantum(): #Change a quantum
-  q = input("Current quantum: " + RRHelper[0] + " New quantum: ")
-  RRHelper[0] = q
-  print("Using a new quantum with value " + RRHelper[0])
+  q = input("Current quantum: " + sysList[0] + " New quantum: ")
+  int(q) #Im int?
+  sysList[0] = q
+  print("Using a new quantum with value " + sysList[0])
   
 def help():
   print('*Little help')
   print('--Write "Quit/Exit/Q" for exit')
   print('--Write "Insert/Add" for add a process')
   print('--Write "Delete/Remove/Del" for delete a process')
-  print('--Write "Data" if you want details')
+  print('--Write "Data/Score" if you want details')
   print('--Write "Scheduling/Sched" for scheduling change')
   print('--Write "Quantum/Quan" for quantum change\n')
   return True
@@ -156,12 +181,15 @@ def main():
         print("* Please, just use numbers")
     elif sel == "Delete" or sel == "Remove" or sel == "Del":
       remove()
-    elif sel == "Data":
+    elif sel == "Data" or sel == "Score":
       data()
     elif sel == "Scheduling"or sel == "Sched":
       changeScheduling()
     elif sel == "Quantum" or sel == "Quan":
-      changeQuantum()
+      try:
+        changeQuantum()
+      except ValueError:
+        print("* Please, just use numbers")        
     elif len(listpro) > 0:
       if sched == "FCFS":
         results = FCFS()
