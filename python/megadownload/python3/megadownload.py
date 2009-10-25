@@ -141,6 +141,15 @@ def megaupload(link):
     if int(fileinfo.get('Content-Length')) == int(os.path.getsize(destinypath)):
       print("Completed file exists.. skipping " + filename + ", url = " + link)
       return True
+    elif int(fileinfo.get('Content-Length')) < int(os.path.getsize(destinypath)):
+      x = input("Invalid file... should i delete it? Y/n/q: ").capitalize()
+      if x == "Q":
+        sys.exit(0)
+      elif x != "N":
+        os.remove(destinypath)
+        megaupload(link)
+      else:
+        return True
     else:
       print("Incompleted file exists... resuming...")
   #End "When exist a file..."
