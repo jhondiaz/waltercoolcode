@@ -33,55 +33,49 @@ def exit(): #Bye!
   sys.exit(0)
 
 def download(valid, destinypath, link): #Download algorithm.
-  try: #Download it.!
-    urllib.request.urlretrieve(valid,destinypath, hook)
-    print('\nDownloaded.')
+  try:
+    if os.system('wget -c "' + valid + '" -P ' + destinypath) == 0:
+      #urllib.request.urlretrieve(valid,destinypath, hook)
+      print('\nDownloaded.')
+    else:
+      raise(IOError)
   except IOError: #If IO Error
     print('No space on disk or data write error')
     IOresp = input("Retry? Y/n/q: ").capitalize()
-    try:
-      os.remove(destinypath)
-    except:
-      pass
     if (IOresp == "Q"):
      sys.exit(0)
     elif (IOresp == "Y") or (IOresp == ""): #You want try again? Resume!!!
       return False
   except KeyboardInterrupt:
-    try:
-      os.remove(destinypath)
-    except:
-      pass
-    print("Stopped, i have deleted the file...")
     sys.exit(1)
   except: #If something is wrong...
     print("\nError.")
     raise
   return True
 
-def hook(blockNumber, blockSize, totalSize): #Is dirty!
-  downloaded = blockNumber * blockSize / 1.0
-  tsize = totalSize / 1.0
-  size = "b"
-  tsizes = "b"
-  if downloaded > 1024:
-    downloaded = downloaded/1024
-    size = "Kb"
-    if downloaded > 1024:
-      downloaded = downloaded/1024
-      size = "Mb"
-  if tsize > 1024: #Bad bad bad, really bad implemented!.
-    tsize = tsize/1024
-    tsizes = "Kb"
-    if tsize > 1024:
-      tsize = tsize/1024
-      tsizes = "Mb"
-      if tsize > 1024: #Ugly!
-        tsize = tsize/1024
-        tsizes = "Gb"
-  downloaded = format(downloaded,'.5g')
-  tsize = format(tsize,'.5g')
-  print("\rDownloading {} {} of {} {}   ".format(downloaded, size, tsize, tsizes), end=' ')
+#def hook(blockNumber, blockSize, totalSize): #Is dirty!
+#  downloaded = blockNumber * blockSize / 1.0
+#  tsize = totalSize / 1.0
+#  size = "b"
+#  tsizes = "b"
+#  if downloaded > 1024:
+#    downloaded = downloaded/1024
+#    size = "Kb"
+#    if downloaded > 1024:
+#      downloaded = downloaded/1024
+#      size = "Mb"
+#  if tsize > 1024: #Bad bad bad, really bad implemented!.
+#    tsize = tsize/1024
+#    tsizes = "Kb"
+#    if tsize > 1024:
+#      tsize = tsize/1024
+#      tsizes = "Mb"
+#      if tsize > 1024: #Ugly!
+#        tsize = tsize/1024
+#        tsizes = "Gb"
+#  downloaded = format(downloaded,'.5g')
+#  tsize = format(tsize,'.5g')
+#  print("\rDownloading {} {} of {} {}   ".format(downloaded, size, tsize, tsizes), end=' ')
 
 def loginmegaupload(): #Try validating on megaupload server.
   cj = MozillaCookieJar()
@@ -138,26 +132,21 @@ def megaupload(link):
   valid = down2[:down2.find("\"")] #Download Link
   filename = valid.split('/')[-1] #Name, i like for print use only
   destinypath = path + filename #Path + Filename
+
   
+  webfile = urllib.request.urlopen(valid)
   #Start "When exist a file..."
-  if autoskip != True and (os.path.exists(destinypath) is True): # If is not autoskipped.
-      filexist = input("A file with the same name " + filename + " exists, overwrite? y/N/q: ").capitalize()
-
-      if filexist == "Q":
-        quit() #You want quit.
-      if (filexist != "Y") and (autoskipAsk == False): # Skip that file for first time?
-        autoskipAsk = True
-        askipall = input("Autoskip All? Y/n: ").capitalize()
-        if askipall != "N": # If you want autoskip all.
-          autoskip = True
-
-  if (autoskip == True) and (os.path.exists(destinypath) is True): # When autoskip is on.
-    print("Skipped " + filename + ", url = " + link)
-    return True
+  if os.path.exists(destinypath) is True: #If file exist.
+    fileinfo = webfile.info()
+    if int(fileinfo.get('Content-Length')) == int(os.path.getsize(destinypath)):
+      print("Completed file exists.. skipping " + filename + ", url = " + link)
+      return True
+    else:
+      print("Incompleted file exists... resuming...")
   #End "When exist a file..."
 
   print("Downloading " + valid.split('/')[-1] + " as " + link)
-  dow = download(valid, destinypath, link) #Start to download.
+  dow = download(valid, path, link) #Start to download.
   if dow is False: #If fail
     megaupload(link)
   
