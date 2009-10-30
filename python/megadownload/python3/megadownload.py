@@ -34,7 +34,7 @@ def exit(): #Bye!
 
 def download(valid, destinypath, link): #Download algorithm.
   try:
-    if os.system('wget -c "' + valid + '" -P ' + destinypath) == 0:
+    if os.system('wget -c "' + valid + '" -P "' + destinypath + '"') == 0:
       #urllib.request.urlretrieve(valid,destinypath, hook)
       print('\nDownloaded.')
     else:
@@ -163,10 +163,10 @@ def megaupload(link):
   
 def megalink(link): #Is a valid link or strange text?
   fixlink = link.replace(" ","")
-  start = fixlink.find("http://www.megaupload.com")
+  start = fixlink.find("megaupload.com")
   if start == -1:
     return "nolink"
-  return fixlink[start:]
+  return "http://www." + fixlink[start:]
 
 def main():
   try: #Open the file.

@@ -175,10 +175,12 @@ def megaupload(link):
   
 def megalink(link): #Is a valid link or strange text?
   fixlink = link.replace(" ","")
-  start = fixlink.find("http://www.megaupload.com")
-  if start == -1:
+  start = fixlink.find("megaupload.com")
+  if start > -1:
+    return fixlink[start:]
+  else:
     return "nolink"
-  return fixlink[start:]
+
 
 try: #Open the file.
   f = open(path + "links", "rw")
