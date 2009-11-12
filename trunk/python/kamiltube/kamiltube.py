@@ -6,7 +6,7 @@
 # mailto: waltercool [at] slash [dot] cl
 # http://www.slash.cl
 #
-version = "0.7.4_alpha1"
+version = "0.7.4_alpha2"
 
 import sys, getpass, os, urllib2
 
@@ -29,6 +29,12 @@ debugMode = False
 gui = None
 guisupport = list()
 #End Variables
+#GUI Global Variables
+deftit = "Kamiltube " + version
+defvid = "http://www.youtube.com/watch?v=iW87vxM11tw"
+deflabel = "Video Address:"
+defgui=""
+#End GUI Global Variables
 
 #Importing GUI
 try:
@@ -43,30 +49,39 @@ try:
   guisupport.append("Tk")
 except ImportError:
   pass
+try:
+  import gtk
+  guisupport.append("Gtk")
+except ImportError:
+  pass
   
 #End Importing GUI
 
 def checkparameters(x): #For something
   global gui, debugMode
   #Only for debug
-  if x.find("gui") > 0:
+  if x.find("-gui") >= 0:
     print("Supported GUIs:")
     for x in guisupport:
       print("* " + x)
     sys.exit(True)
-  if x.find("d") > 0 and debugMode is not True:
+  if x.find("D") >= 0 and debugMode is not True:
     debugMode = True
     print("Using debug mode")
-  if x.find("-help") > 0 or x.find("h") > 0: #Parameters
-    sys.argv = ["", x, "help"]
-  if x.find("qt4") > 0 and gui != "PyQt4" and guisupport.count("PyQt4") == 1:
+  #if x.find("-help") == 0 or x.find("h") >= 0: #Parameters
+    #sys.argv["help"]
+  if x.find("-qt4") == 0 and gui != "PyQt4" and guisupport.count("PyQt4") == 1:
     if debugMode == True: #Only for debug
       print("Using PyQt4 version")
     gui = "PyQt4"
-  if x.find("tk") > 0 and gui != "Tk" and guisupport.count("Tk") == 1:
+  elif x.find("-tk") == 0 and gui != "Tk" and guisupport.count("Tk") == 1:
     if debugMode == True: #Only for debug
       print("Using Tk version")
     gui = "Tk"
+  elif x.find("-gtk") == 0 and gui != "Gtk" and guisupport.count("Gtk") == 1:
+    if debugMode == True: #Only for debug
+      print("Using Gtk version")
+    gui = "Gtk"
   return True
     
 def messages(message,title): #Messages
@@ -77,6 +92,10 @@ def messages(message,title): #Messages
     QMessageBox.information(None ,title,message)
   elif gui is "Tk":
     tkMB.showinfo(title, message)
+  elif gui is "Gtk":
+    d = gtk.MessageDialog(parent=defgui,buttons=gtk.BUTTONS_CLOSE, message_format=message)
+    d.run()
+    d.destroy()
   else:
     print("* " + message)
   return True
@@ -86,7 +105,7 @@ def additional(link): #Not video links.
     print("Im on additional method")
   val = link.capitalize()
   if val == "Help" or val == "Info":
-    messages("Kamiltube Help\n\n- kamiltube --help, -h or help: This help\n- kamiltube <video1> <video2> <videoN>: Watch video 1, then video 2... n videos\n- kamiltube -qt4/-tk: Use PyQt4 or Tk mode.\n- kamiltube -gui: Supported GUI.\n\n On video parameters:\n- d<video>: Download the video.\n- update: for check some updates.\n","Information\n")
+    messages("Kamiltube Help\n\n- kamiltube --help, -h or help: This help\n- kamiltube <video1> <video2> <videoN>: Watch video 1, then video 2... n videos\n- kamiltube --qt4/--gtk/--tk: Use PyQt4, PyGTK or Tk mode.\n- kamiltube --gui: Supported GUI.\n\n On video parameters:\n- d<video>: Download the video.\n- update: for check some updates.\n","Information\n")
   elif val == "Website":
     messages("The website of this application is www.slash.cl, visit it for check updates or others","Information")
   elif val == "Update":
@@ -220,8 +239,8 @@ def login(video):
       mail = login_mail.text()
       passw = login_passw.text()
       if mail != "" and passw != "":
-	login.close()
-	return work(video)
+	      login.close()
+	      return work(video)
       
     #Signals
     login.connect(login_Ok, SIGNAL("clicked()"), accept)
@@ -232,6 +251,49 @@ def login(video):
     login.setWindowTitle("NicoLogin")
     login.show()
     login.exec_()
+
+  elif gui is "Gtk": #A login with GTK GUI
+    #Method
+    def accept(widget):
+      global mail, passw
+      mail = login_mail.get_text()
+      passw = login_passw.get_text()
+      if mail != "" and passw != "":
+	      login.destroy()
+	      return work(video)
+    def close(widget):
+      login.destroy()
+
+    #Objects
+    login = gtk.Window()
+    layout = gtk.Table(2,3,True)
+    login_mailtext = gtk.Label()
+    login_mail = gtk.Entry()
+    login_passtext = gtk.Label()
+    login_passw = gtk.Entry()
+    login_Ok = gtk.Button("Ok")
+    login_cancel = gtk.Button("Cancel")
+    
+    #Grid
+    layout.attach(login_mailtext,0,1,0,1)
+    layout.attach(login_mail,1,2,0,1)
+    layout.attach(login_passtext,0,1,1,2)
+    layout.attach(login_passw,1,2,1,2)
+    layout.attach(login_Ok,0,1,2,3)
+    layout.attach(login_cancel,1,2,2,3)
+
+    #Options and Run
+    login_Ok.connect("clicked",accept)
+    login_cancel.connect("clicked",close)
+    login.connect("destroy", gtk.main_quit)
+    login_mailtext.set_text("Email:")
+    login_mail.set_text(mail)
+    login_passtext.set_text("Password:")
+    login_passw.set_visibility(False)
+    login.add(layout)
+    login.show_all()
+    gtk.main()
+
   elif gui is "Tk": #A login with Tk GUI
     #Method
     def accept(*args):
@@ -239,8 +301,8 @@ def login(video):
       mail = login_mail.get()
       passw = login_passw.get()
       if mail != "" and passw != "":
-	login.destroy()
-	return work(video)
+	      login.destroy()
+	      return work(video)
 	
     #Objects
     login = Tk.Toplevel()
@@ -334,14 +396,15 @@ def work(video): #Im checking if all is right, and preparation for kamlib functi
   return False
   
 def guiPyQt4(): 
+  global defgui
   app = QApplication(sys.argv)
   widget = QWidget()
   if debugMode == True:
     print("Im using PyQt4 mode")
   
   #Objets
-  label = QLabel("Video Address:")
-  box = QLineEdit("http://www.youtube.com/watch?v=iW87vxM11tw")
+  label = QLabel(deflabel)
+  box = QLineEdit(defvid)
   button = QPushButton("&Watch it!")
 
   #Layouts
@@ -358,14 +421,50 @@ def guiPyQt4():
   #Signals and others!
   widget.connect(button, SIGNAL("clicked()"), gotowork)
   box.selectAll()
-  widget.setWindowTitle("Kamiltube " + version)
+  widget.setWindowTitle(deftit)
   widget.show()
+  defgui = app
   app.exec_()
+
+def guiGtk():
+  global defgui
+  if debugMode == True:
+    print("Im using Gtk mode")
+
+  #Methods
+  def gotowork(widget):
+    if box.get_text() != "":
+      video = box.get_text()
+      work(video)
+  #Objects
+  app = gtk.Window()
+  label = gtk.Label()
+  box = gtk.Entry()
+  button = gtk.Button("Watch It")
+
+  #Layouts
+  layout = gtk.Table(2,2,True)
+  layout.attach(label, 0,1,0,1)
+  layout.attach(box,1,2,0,1)
+  layout.attach(button,1,2,1,2)
+
+  #Signals and others!
+  button.connect("clicked",gotowork)
+  label.set_text(deflabel)
+  box.set_text(defvid)
+
+  app.connect("destroy", gtk.main_quit)
+  app.add(layout)
+  app.set_title(deftit)
+  app.set_size_request(350, 50)
+  app.show_all()
+  defgui = app
+  gtk.main()
 
 def guiTk():
   if debugMode == True:
     print("Im using Tk mode")
-    
+  global defgui
   #Methods
   def gotowork(*args):
     if box.get() != "":
@@ -375,7 +474,7 @@ def guiTk():
   #Objets
   root = Tk.Tk()
   frame = Tk.Frame(root)
-  label = Tk.Label(frame, text="Video Address:")
+  label = Tk.Label(frame, text=deflabel)
   box = Tk.Entry(frame)
   button = Tk.Button(frame, text="Watch It!", command=gotowork)
   #Layouts
@@ -383,13 +482,14 @@ def guiTk():
   box.grid(row=1)
   button.grid(row=1, column=1)
   #Signals and others!
-  root.title("Kamiltube " + version)
+  root.title(deftit)
   root.minsize(350,50)
-  box.insert(0,"http://www.youtube.com/watch?v=iW87vxM11tw")
+  box.insert(0, defvid)
   box.select_range(0, Tk.END)
   box.focus()
   box.bind("<Return>", gotowork)
   frame.pack()
+  defgui = root
   root.mainloop()
   
 def console(): #Console only.
@@ -427,7 +527,7 @@ def main(): #Main App
   tempArgv = list(sys.argv)  #Check the parameters
   for x in tempArgv:
     if x.find("-") == 0:
-      checkparameters(x.capitalize())
+      checkparameters(x[1:].capitalize())
       sys.argv.remove(x)
 
   if len(sys.argv) > 1:
@@ -436,6 +536,8 @@ def main(): #Main App
     guiPyQt4()
   elif gui is "Tk":
     guiTk()
+  elif gui is "Gtk":
+    guiGtk()
   else:
     console()
   print("\nThanks for use Kamiltube")
