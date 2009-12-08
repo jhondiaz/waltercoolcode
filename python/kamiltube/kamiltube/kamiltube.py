@@ -13,12 +13,13 @@ import sys, getpass, os, urllib2
 try: #Finding kamlib
   import kamlib.weblib
   import core
+#  import gui
 except ImportError:
   print("Data missing!")
   sys.exit(1)
 
 videolib = kamlib.weblib.video() #Loading a kamlib object
-core = core.detect()
+core = core.work()
 
 #Variables
 mail = ""
