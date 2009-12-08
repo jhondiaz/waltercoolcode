@@ -6,7 +6,7 @@ class dados
 {
 	public static void main(String args[])
 	{
-		int a, b;
+		int a;
 		int x = 0;
 		int p = 1;
 		int q = 0;

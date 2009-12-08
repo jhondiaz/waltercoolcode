@@ -13,9 +13,9 @@ import sys,os,time,urllib
 
 class detect():
   def __init__(self):
-    mp, totem = self.os_det()
+    self.mproute, self.totemroute = self.os_det()
     self.gui = self.gui_det()
-    self.player = self.player_det(mp, totem)
+    self.player = self.player_det(self.mproute, self.totemroute)
   
   def os_det(self):
     os = sys.platform
@@ -48,7 +48,7 @@ class detect():
     except ImportError:
       pass
     return data
-  
+    
   def player_det(self,mproute, ttroute):
     data = list()
     if os.path.exists(mproute) is True:
