@@ -8,34 +8,55 @@
 #
 
 import threading
-from math import *
+import math
 import time
 
 b = 0
-x = []
-aver = 0
-threads = 11
+threads = 4
+
 print("PyWalterCool Benchmark")
 class task(threading.Thread):
   def run(self):
+    sin = math.sin
+    pi = math.pi
+    e = math.e
     self.data = 0
-    global a,b
-    while(b == 0):
+    while(True):
       sin(2*pi*e*self.data)
       self.data += 1.0
 
   def finish(self):
     return self.data/1000
 
-print("Eins Zwei Drei Vier!")
-for a in range(threads):
-  x.append( task() )
-  x[a].start() 
-time.sleep(3)
-b = 1
-for a in range(threads):
-  x[a] = x[a].finish()
-  aver += x[a]
-print ("Finished!")
-x.sort()
-print("Your PyWaltercool MAX:", max(x), 'MIN:', min(x), 'AVERAGE:',aver/threads)
+class bench():
+  x = []
+  running = 0
+  def start(self):
+    self.x = []
+    self.running = 0
+    for a in range(threads):
+      self.x.append( task() )
+      self.running+=1
+      self.x[a].start()
+    
+  def stop(self):
+    aver = 0
+    for a in range(self.running):
+      self.x[a] = self.x[a].finish()
+      aver += self.x[a]
+    return aver
+      
+if __name__ == '__main__':
+  ben = bench()
+  try:
+    while True:
+      ben.start()
+      time.sleep(3)
+      aver = ben.stop()
+      ben.x.sort()
+      print(("Your PyWaltercool MAX:", max(ben.x), 'MIN:', min(ben.x), 'AVERAGE:',aver/threads))
+  except KeyboardInterrupt:
+    ben.stop()
+  except:
+    ben.stop()
+    raise
